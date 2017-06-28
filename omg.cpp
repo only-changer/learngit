@@ -298,12 +298,12 @@ int main()
 		     }else
 		     {
 		     	 string ss = "";int ke = -1;
-		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
+		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k]; 
 		     	 int p = atoi(ss.c_str());ss = "";
-		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 for (k = s.find("($",0) + 2;k < s.size() - 1;++k) if (s[k] != ' ') ss += s[k];
 		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
 		     	 else ke = to_rigister[ss];
-		     	 int t = r[ke] - p;
+		     	 int t = r[ke] + p;
 		     	 data[t].num = r[key];
 		         data[t].mark = 1;
 		         data[t].size = 4;
@@ -326,10 +326,10 @@ int main()
 		     	 string ss = "";int ke = -1;
 		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
 		     	 int p = atoi(ss.c_str());ss = "";
-		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 for (k = s.find("($",0) + 2;k < s.size()-1;++k) if (s[k] != ' ') ss += s[k];
 		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
 		     	 else ke = to_rigister[ss];
-		     	 int t = r[ke] - p;
+		     	 int t = r[ke] + p;
 		     	 r[key] = data[t].num ;
 		     }
 		     continue;
@@ -350,10 +350,10 @@ int main()
 		     	 string ss = "";int ke = -1;
 		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
 		     	 int p = atoi(ss.c_str());ss = "";
-		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 for (k = s.find("($",0) + 2;k < s.size()-1;++k) if (s[k] != ' ') ss += s[k];
 		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
 		     	 else ke = to_rigister[ss];
-		     	 int t = r[ke] - p;
+		     	 int t = r[ke] + p;
 		     	 r[key] = data[t].num ;
 		     }
 		     continue;
@@ -492,14 +492,12 @@ int main()
 		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
 		         else key1 = to_rigister[s];s = ""; k += 2; 
 		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
-		     cout<<key1<<' '<<s<<endl;
 		     if (s.find('$',0) != s.npos)
 		     {
 		     	 s.erase(s.begin());
 		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		         else key2 = to_rigister[s];
 		         if (r[key1] >= r[key2]) b = true;
-		         		     	cout<<"             "<<key1<<' '<<r[key1]<<' '<<key2<<' '<<r[key2]<<endl;
 		     }
 		     else
 		     {
@@ -510,7 +508,6 @@ int main()
 			 {
 			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
 		     	 s += ':';
-		     	 		     cout<<j<<' '<<s<<' '<<b<<endl;
                  j = label[s] - 1;
              }
              continue;
