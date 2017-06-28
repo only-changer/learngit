@@ -4,6 +4,7 @@
 #include<string>
 #include<map>
 #include<cstdlib>
+const int N = 10000000;
 using namespace std;
 vector<string> str;
 map<string,int> label;
@@ -16,9 +17,10 @@ struct data_type
 	int num;
 	int mark = -1;
 	int size;
+	int current_size = 0;
 	string chr;
 };
-data_type data[10000000];
+data_type data[N];
 int datanum = 0;
 void ready()
 {
@@ -53,8 +55,28 @@ void ready()
 	to_rigister["fp"] = 30;
 	to_rigister["ra"] = 31;
 }
+string check(string s)
+{
+	string ss;
+	for (int i = 0;i < s.size();++i)
+	{
+		if (s[i] == '\\') 
+		{
+			if (s[i+1] == '\\') ss += '\\\\';
+			if (s[i+1] == '\'') ss += '\\\'';
+			if (s[i+1] == '\"') ss += '\\\"';
+			if (s[i+1] == 'n') ss += '\n';
+			if (s[i+1] == 't') ss += '\t';
+			if (s[i+1] == '0') ss += '\0';
+			if (s[i+1] == 'r') ss += '\r';
+			++i;
+		} else ss += s[i];
+	}
+	return ss;
+}
 int main()
 {
+	r[29] = N;
 	ready();
 	FILE *stdin1 = fopen("array_test1-mahaojun.s","r");
     FILE *stdin2 = fopen("array_test1-mahaojun.in","r");
@@ -98,7 +120,6 @@ int main()
 				         data[datanum] = d;
 				         datanum += 4;
 				         ++j;
-				         cout<<d.begin<<' '<<d.end<<' '<<d.num<<endl;
 				     }
 				}
 				if (str[k].find(".half",0) != str[k].npos) 
@@ -120,7 +141,6 @@ int main()
 				         data[datanum] = d;
 				         datanum += 2;
 				         ++j;
-				         cout<<d.begin<<' '<<d.end<<' '<<d.num<<endl;
 				     }
 				}
 				if (str[k].find(".byte",0) != str[k].npos) 
@@ -142,7 +162,6 @@ int main()
 				         data[datanum] = d;
 				         datanum += 1;
 				         ++j;
-				         cout<<d.begin<<' '<<d.end<<' '<<d.num<<endl;
 				     }
 				}
 				if (str[k].find(".asciiz",0) != str[k].npos) 
@@ -152,7 +171,8 @@ int main()
 					for (;j < str[k].size()-1;++j)
 					{
 						s += str[k][j];
-					}                       
+					}   
+					s = check(s);                    
 					s += '\0';       
 					data_type d;
 					d.size = s.size();
@@ -160,7 +180,6 @@ int main()
 					d.chr = s;
                     data[datanum] = d;
 					datanum += s.size();
-					cout<<d.begin<<' '<<d.end<<' '<<d.chr<<endl;
 				} else 
 				if (str[k].find(".ascii",0) != str[k].npos) 
 				{
@@ -170,6 +189,7 @@ int main()
 					{
 						s += str[k][j];
 					}
+					s = check(s);
 					if (s.size() == 0) continue;
 				    data_type d;
 					d.size = s.size();
@@ -177,7 +197,6 @@ int main()
 					d.chr = s;
                     data[datanum] = d;
 					datanum += s.size();
-					cout<<d.begin<<' '<<d.end<<' '<<d.chr<<endl;
 				}  
 				if (str[k].find(".align",0) != str[k].npos)
 				{
@@ -212,9 +231,10 @@ int main()
 		}
 	}
 	j = label["main:"] ;
-	while(true)
+	while(j < str.size()-1)
 	{ 
 	    ++j;
+	    cout<<j<<' '<<str[j]<<endl;
 	    if (str[j].find("jal",0) != str[j].npos)
 		{
 		     r[31] = j + 1;
@@ -254,6 +274,9 @@ int main()
 			if (r[2] == 9)
 			{
 				r[2] = datanum;
+				data[datanum].mark = 6;
+				data[datanum].size = r[4];
+				data[datanum].current_size = 0;
 				datanum += r[4];
 			}
 			continue;
@@ -262,14 +285,79 @@ int main()
 		{
 			 string s = "";
 			 int key;
-		     for (int k = str[j].find("li",0) + 4;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     for (int k = str[j].find("sw",0) + 4;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		     else key = to_rigister[s];s = "";
 		     for (k = str[j].find(",",0) + 1;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
-		     if (str[s].find("($",0) == str[s].npos)
+		     if (s.find("($",0) == s.npos)
 		     {
-		         
-		     
+		     	 s += ':';
+		         data[data_label[s]].num = r[key];
+		         data[data_label[s]].mark = 1;
+		         data[data_label[s]].size = 4;
+		     }else
+		     {
+		     	 string ss = "";int ke = -1;
+		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
+		     	 int p = atoi(ss.c_str());ss = "";
+		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
+		     	 else ke = to_rigister[ss];
+		     	 int t = r[ke] - p;
+		     	 data[t].num = r[key];
+		         data[t].mark = 1;
+		         data[t].size = 4;
+		     }
+		     continue;
+		}
+		if (str[j].find("lb",0) != str[j].npos)
+		{
+			 string s = "";
+			 int key;
+		     for (int k = str[j].find("lw",0) + 4;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
+		     else key = to_rigister[s];s = "";
+		     for (k = str[j].find(",",0) + 1;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find("($",0) == s.npos)
+		     {
+		         r[key] = data[data_label[s]].num;
+		     }else
+		     {
+		     	 string ss = "";int ke = -1;
+		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
+		     	 int p = atoi(ss.c_str());ss = "";
+		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
+		     	 else ke = to_rigister[ss];
+		     	 int t = r[ke] - p;
+		     	 r[key] = data[t].num ;
+		     }
+		     continue;
+		}
+		if (str[j].find("lw",0) != str[j].npos)
+		{
+			 string s = "";
+			 int key;
+		     for (int k = str[j].find("lw",0) + 4;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
+		     else key = to_rigister[s];s = "";
+		     for (k = str[j].find(",",0) + 1;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find("($",0) == s.npos)
+		     {
+		         r[key] = data[data_label[s]].num;
+		     }else
+		     {
+		     	 string ss = "";int ke = -1;
+		     	 for (k = 0;k < s.find("($",0);++k) if (s[k] != ' ') ss += s[k];
+		     	 int p = atoi(ss.c_str());ss = "";
+		     	 for (k = s.find("($",0) + 2;k < s.size();++k) if (s[k] != ' ') ss += s[k];
+		     	 if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
+		     	 else ke = to_rigister[ss];
+		     	 int t = r[ke] - p;
+		     	 r[key] = data[t].num ;
+		     }
+		     continue;
+		}
 		if (str[j].find("jr",0) != str[j].npos)
 		{
 		     string s = "";
@@ -277,10 +365,235 @@ int main()
 		     for (int k = str[j].find("jr",0) + 4;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		     else key = to_rigister[s];
-			 j = r[key];
+			 j = r[key] - 1;
 			 continue;
 		}
-			
+		if (str[j].find("add",0) != str[j].npos)
+		{
+		     string s = "";
+			 int key1,key2,key3;
+		     for (int k = str[j].find("add",0) + 5;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";
+		     for (k = str[j].find('$',k) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];s = "";k += 2;   
+		     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		     	 s.erase(s.begin());
+		         if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+		         else key3 = to_rigister[s];
+		         r[key1] = r[key2] + r[key3];
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	r[key1] = r[key2] + q;
+		     }
+             continue;
+		 }
+		if (str[j].find("sub",0) != str[j].npos)
+		{
+		     string s = "";
+			 int key1,key2,key3;
+		     for (int k = str[j].find("sub",0) + 5;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";
+		     for (k = str[j].find('$',k) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];s = "";k += 2;   
+		     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		     	 s.erase(s.begin());
+		         if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+		         else key3 = to_rigister[s];
+		         r[key1] = r[key2] - r[key3];
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	r[key1] = r[key2] - q;
+		     }
+             continue;
+		 }
+		if (str[j].find("mul",0) != str[j].npos)
+		{
+		     string s = "";
+			 int key1,key2,key3;
+		     for (int k = str[j].find("add",0) + 5;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";
+		     for (k = str[j].find('$',k) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];s = "";k += 2;   
+		     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		     	 s.erase(s.begin());
+		         if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+		         else key3 = to_rigister[s];
+		         r[key1] = r[key2] * r[key3];
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	r[key1] = r[key2] * q;
+		     }
+             continue;
+		 }
+		 if (str[j].find("move",0) != str[j].npos)
+		 {
+		 	 string s = "";
+			 int key1,key2;
+		     for (int k = str[j].find("move",0) + 6;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";
+		     for (k = str[j].find('$',k) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];s = "";
+			 r[key1] = r[key2];
+		 }
+		 if (str[j].find("ble",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = ""; k += 2;  
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] >= r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] <= q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+         if (str[j].find("bge",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		     for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = ""; k += 2; 
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     cout<<key1<<' '<<s<<endl;
+		     if (s.find('$',0) != s.npos)
+		     {
+		     	 s.erase(s.begin());
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] >= r[key2]) b = true;
+		         		     	cout<<"             "<<key1<<' '<<r[key1]<<' '<<key2<<' '<<r[key2]<<endl;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] >= q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+		     	 		     cout<<j<<' '<<s<<' '<<b<<endl;
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+         if (str[j].find("beqz",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";   k += 2;
+             if (r[key1] == 0) b = true; 
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+         if (str[j].find("beq",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";   k += 2;
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] >= r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] == q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+        if (str[j].find("slt",0) != str[j].npos)
+		{
+		     string s = "";
+			 int key1,key2,key3;
+		     for (int k = str[j].find("slt",0) + 5;k < str[j].size() && str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";
+		     for (k = str[j].find('$',k) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];s = "";k += 2;   
+		     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		     	 s.erase(s.begin());
+		         if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+		         else key3 = to_rigister[s];
+		         if ( r[key2] < r[key3]) r[key1] = 1;else r[key1] = 0;
+		     }
+		     else
+		     {
+		     	 int q = atoi(s.c_str());
+		         if ( r[key2] < q) r[key1] = 1;else r[key1] = 0;
+		     }
+             continue;
+		 }
+		if (str[j][0] == 'b')
+		{
+		     string s = "";
+		     for (int k = 2;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     s += ':';
+		    // cout<<j<<' '<<s<<endl; 
+		     j = label[s] - 1;
+		     continue;
+		}
 	}    
 }
 
