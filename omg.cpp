@@ -173,8 +173,7 @@ int main()
 					{
 						s += str[k][j];
 					}   
-					s = check(s);                    
-					s += '\0';       
+					s = check(s);                           
 					data_type d;
 					d.size = s.size();
 					d.mark = 4;
@@ -235,7 +234,7 @@ int main()
 	while(j < str.size()-1)
 	{ 
 	    ++j;
-	  //  cout<<j<<' '<<str[j]<<endl;
+	    //cout<<j<<' '<<str[j]<<endl;
 	    if (str[j].find("jal",0) != str[j].npos)
 		{
 		     r[31] = j + 1;
@@ -345,6 +344,32 @@ int main()
 		         datar[t].size = 4;
 		     }
 		     continue;
+		}
+		if (str[j].find("la", 0) != str[j].npos)
+		{
+			string s = "";
+			int key;
+			for (k = str[j].find("la", 0) + 4; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
+			else key = to_rigister[s]; s = "";
+			for (k = str[j].find(",", 0) + 1; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find("($", 0) == s.npos)
+			{
+				s += ':';
+				r[key] = data_label[s];
+			}
+			else
+			{
+				string ss = ""; int ke = -1;
+				for (k = 0; k < s.find("($", 0); ++k) if (s[k] != ' ') ss += s[k];
+				int p = atoi(ss.c_str()); ss = "";
+				for (k = s.find("($", 0) + 2; k < s.size() - 1; ++k) if (s[k] != ' ') ss += s[k];
+				if (ss[0] >= '0' && ss[0] <= '9') ke = atoi(ss.c_str());
+				else ke = to_rigister[ss];
+				int t = r[ke] + p;
+				r[key] = t;
+			}
+			continue;
 		}
 		if (str[j].find("lb",0) != str[j].npos)
 		{
@@ -528,26 +553,15 @@ int main()
 		         else key2 = to_rigister[s];s = "";
 			 r[key1] = r[key2];
 		 }
-		 if (str[j].find("ble",0) != str[j].npos)
+		 if (str[j].find("beqz",0) != str[j].npos)
 		 {
 		 	 string s = ""; 
 		 	 int key1,key2;
 		 	 bool b = false;
 		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
-		         else key1 = to_rigister[s];s = ""; k += 2;  
-		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
-		     if (s.find('$',0) != s.npos)
-		     {
-		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
-		         else key2 = to_rigister[s];
-		         if (r[key1] >= r[key2]) b = true;
-		     }
-		     else
-		     {
-		     	int q = atoi(s.c_str());
-		     	if (r[key1] <= q) b = true;
-		     } k += 2;s = "";
+		         else key1 = to_rigister[s];s = "";   k += 2;
+             if (r[key1] == 0) b = true; 
 			 if (b == true)
 			 {
 			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
@@ -556,6 +570,40 @@ int main()
              }
              continue;
          }
+		 if (str[j].find("bnez", 0) != str[j].npos)
+		 {
+			 string s = "";
+			 int key1, key2;
+			 bool b = false;
+			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			 else key1 = to_rigister[s]; s = "";   k += 2;
+			 if (r[key1] != 0) b = true;
+			 if (b == true)
+			 {
+				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+				 s += ':';
+				 j = label[s] - 1;
+			 }
+			 continue;
+		 }
+		 if (str[j].find("blez", 0) != str[j].npos)
+		 {
+			 string s = "";
+			 int key1, key2;
+			 bool b = false;
+			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			 else key1 = to_rigister[s]; s = "";   k += 2;
+			 if (r[key1] <= 0) b = true;
+			 if (b == true)
+			 {
+				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+				 s += ':';
+				 j = label[s] - 1;
+			 }
+			 continue;
+		 }
 		 if (str[j].find("bgez", 0) != str[j].npos)
 		 {
 			 string s = "";
@@ -573,6 +621,96 @@ int main()
 			 }
 			 continue;
 		 }
+		 if (str[j].find("bgtz", 0) != str[j].npos)
+		 {
+			 string s = "";
+			 int key1, key2;
+			 bool b = false;
+			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			 else key1 = to_rigister[s]; s = "";   k += 2;
+			 if (r[key1] > 0) b = true;
+			 if (b == true)
+			 {
+				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+				 s += ':';
+				 j = label[s] - 1;
+			 }
+			 continue;
+		 }
+		 if (str[j].find("bltz", 0) != str[j].npos)
+		 {
+			 string s = "";
+			 int key1, key2;
+			 bool b = false;
+			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			 else key1 = to_rigister[s]; s = "";   k += 2;
+			 if (r[key1] < 0) b = true;
+			 if (b == true)
+			 {
+				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+				 s += ':';
+				 j = label[s] - 1;
+			 }
+			 continue;
+		 }
+		 if (str[j].find("beq",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";   k += 2;
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] == r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] == q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+    	 if (str[j].find("bne",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = "";   k += 2;
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] != r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] != q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
          if (str[j].find("bge",0) != str[j].npos)
 		 {
 		 	 string s = ""; 
@@ -603,49 +741,26 @@ int main()
              }
              continue;
          }
-		 if (str[j].find("bnez", 0) != str[j].npos)
-		 {
-			 string s = "";
-			 int key1, key2;
-			 bool b = false;
-			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
-			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
-			 else key1 = to_rigister[s]; s = "";   k += 2;
-			 if (r[key1] != 0) b = true;
-			 if (b == true)
-			 {
-				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
-				 s += ':';
-				 j = label[s] - 1;
-			 }
-			 continue;
-		 }
-		 if (str[j].find("bgtz", 0) != str[j].npos)
-		 {
-			 string s = "";
-			 int key1, key2;
-			 bool b = false;
-			 for (k = str[j].find('$', 0) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
-			 if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
-			 else key1 = to_rigister[s]; s = "";   k += 2;
-			 if (r[key1] > 0) b = true;
-			 if (b == true)
-			 {
-				 for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
-				 s += ':';
-				 j = label[s] - 1;
-			 }
-			 continue;
-		 }
-         if (str[j].find("beqz",0) != str[j].npos)
+		 if (str[j].find("ble",0) != str[j].npos)
 		 {
 		 	 string s = ""; 
 		 	 int key1,key2;
 		 	 bool b = false;
 		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
-		         else key1 = to_rigister[s];s = "";   k += 2;
-             if (r[key1] == 0) b = true; 
+		         else key1 = to_rigister[s];s = ""; k += 2;  
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] <= r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] <= q) b = true;
+		     } k += 2;s = "";
 			 if (b == true)
 			 {
 			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
@@ -654,25 +769,53 @@ int main()
              }
              continue;
          }
-         if (str[j].find("beq",0) != str[j].npos)
+         if (str[j].find("bgt",0) != str[j].npos)
 		 {
 		 	 string s = ""; 
 		 	 int key1,key2;
 		 	 bool b = false;
 		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
-		         else key1 = to_rigister[s];s = "";   k += 2;
+		         else key1 = to_rigister[s];s = ""; k += 2;  
 		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
 		     if (s.find('$',0) != s.npos)
 		     {
 		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		         else key2 = to_rigister[s];
-		         if (r[key1] >= r[key2]) b = true;
+		         if (r[key1] > r[key2]) b = true;
 		     }
 		     else
 		     {
 		     	int q = atoi(s.c_str());
-		     	if (r[key1] == q) b = true;
+		     	if (r[key1] > q) b = true;
+		     } k += 2;s = "";
+			 if (b == true)
+			 {
+			     for (;k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     	 s += ':';
+                 j = label[s] - 1;
+             }
+             continue;
+         }
+         if (str[j].find("blt",0) != str[j].npos)
+		 {
+		 	 string s = ""; 
+		 	 int key1,key2;
+		 	 bool b = false;
+		      for (k = str[j].find('$',0) + 1;str[j][k] != ',' && k < str[j].size();++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+		         else key1 = to_rigister[s];s = ""; k += 2;  
+		     for (;str[j][k] != ',';++k) if (str[j][k] != ' ') s += str[j][k];
+		     if (s.find('$',0) != s.npos)
+		     {
+		         if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+		         else key2 = to_rigister[s];
+		         if (r[key1] < r[key2]) b = true;
+		     }
+		     else
+		     {
+		     	int q = atoi(s.c_str());
+		     	if (r[key1] < q) b = true;
 		     } k += 2;s = "";
 			 if (b == true)
 			 {
@@ -727,6 +870,7 @@ int main()
 		}
 	}    
 }
+
 
 
 
