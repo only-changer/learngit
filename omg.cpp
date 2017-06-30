@@ -81,12 +81,12 @@ string check(string s)
 	}
 	return ss;
 }
-int main()
+int main(int argc,char *argv[])
 {
 	r[29] = N;
 	ready();
-	FILE *stdin1 = fopen("class_test-mahaojun.s", "r");
-	FILE *stdin2 = fopen("function_test-huyuncong.in", "r");
+	FILE *stdin1 = fopen(argv[1], "r");
+	//FILE *stdin2 = fopen("function_test-huyuncong.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
 	{
@@ -281,13 +281,15 @@ int main()
 				}
 				else
 					if (r[2] == 5) {
-						fscanf(stdin2, "%d", &r[2]);
+						//fscanf(stdin2, "%d", &r[2]);
+						cin>>r[2];
 					}
 					else
 						if (r[2] == 8)
 						{
 							char chr[1000];
-							fscanf(stdin2, "%s", &chr);
+						//	fscanf(stdin2, "%s", &chr);
+						cin>>chr;
 							string s = chr;
 							data_type d;
 							d.size = s.size();
