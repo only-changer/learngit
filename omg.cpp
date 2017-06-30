@@ -85,8 +85,8 @@ int main()
 {
 	r[29] = N;
 	ready();
-	FILE *stdin1 = fopen("builtin-5140519064-youyurong.s", "r");
-	FILE *stdin2 = fopen("builtin-5140519064-youyurong.in", "r");
+	FILE *stdin1 = fopen("class_test-mahaojun.s", "r");
+	FILE *stdin2 = fopen("function_test-huyuncong.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
 	{
@@ -249,7 +249,7 @@ int main()
 	while (j < str.size() - 1)
 	{
 		++j;
-	//	cout << j << ' ' << str[j] << ' ' << datar[N - 232].num << endl;
+		//cout << j << ' ' << str[j] << endl;
 		if (str[j].find("jal", 0) != str[j].npos)
 		{
 			r[31] = j + 1;
@@ -277,8 +277,7 @@ int main()
 			if (r[2] == 1) cout << r[4]; else
 				if (r[2] == 4) {
 					int j = r[4];
-					while (datar[j].chr != '\0') { cout <<datar[j].chr ; ++j; }
-					//	cout <<"                        "<< r[2] << ' ' << r[4] <<endl;
+					while (datar[j].chr != '\0') { cout<<datar[j].chr; ++j; }
 				}
 				else
 					if (r[2] == 5) {
@@ -288,17 +287,19 @@ int main()
 						if (r[2] == 8)
 						{
 							char chr[1000];
-							fscanf(stdin2, "%[^\n]", &chr);
+							fscanf(stdin2, "%s", &chr);
 							string s = chr;
 							data_type d;
 							d.size = s.size();
 							d.mark = 5;
-							datar[datanum] = d;
-							for (j = 0; j <= s.size(); ++j)
+							datar[r[4]] = d;
+							int t = r[4];
+							for (int j = 0; j <= s.size(); ++j)
 							{
-								datar[datanum].chr = s[j];
-								++datanum;
+								datar[t].chr = s[j];
+								++t;
 							}
+							
 						}
 						else
 							if (r[2] == 10) return 0; else
@@ -484,12 +485,12 @@ int main()
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				r[key1] = design(r[key2]) + design(r[key3]);
+				r[key1] = (unsigned) int (r[key2]) + (unsigned) int (r[key3]);
 			}
 			else
 			{
 				int q = atoi(s.c_str());
-				r[key1] = design(r[key2]) + design(q);
+				r[key1] = (unsigned) int (r[key2]) + (unsigned) int (q);
 			}
 			continue;
 		}
@@ -534,12 +535,12 @@ int main()
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				r[key1] = design(r[key2]) - design(r[key3]);
+				r[key1] = (unsigned) int (r[key2]) - (unsigned) int (r[key3]);
 			}
 			else
 			{
 				int q = atoi(s.c_str());
-				r[key1] = r[key2] - q;
+				r[key1] = (unsigned) int (r[key2]) - (unsigned) int (q);
 			//	cout << "           " << key1<<' '<<key2<<' '<<r[key1] << ' ' << r[key2] << endl;
 			}
 			continue;
@@ -569,6 +570,40 @@ int main()
 			}
 			continue;
 		}
+		if (str[j].find("mulu", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("mulu", 0) + 6; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s != "")
+			{
+				if (s.find('$', 0) != s.npos)
+				{
+					s.erase(s.begin());
+					if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+					else key3 = to_register[s];
+					r[key1] =  (unsigned) int (r[key2]) *  (unsigned) int (r[key3]);
+				}
+				else
+				{
+					int q = atoi(s.c_str());
+					r[key1] =  (unsigned) int (r[key2]) *  (unsigned) int (q);
+				}
+			}
+			else
+			{
+				long long ss = r[key1]*r[key2];
+				lo = ss & ((1LL << 32) - 1);
+				hi = ss >> 32;
+			}
+			continue;
+		}
 		if (str[j].find("mul", 0) != str[j].npos)
 		{
 			string s = "";
@@ -580,17 +615,126 @@ int main()
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s]; s = ""; k += 2;
 			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s != "")
+			{
+				if (s.find('$', 0) != s.npos)
+				{
+					s.erase(s.begin());
+					if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+					else key3 = to_register[s];
+					r[key1] = r[key2] * r[key3];
+				}
+				else
+				{
+					int q = atoi(s.c_str());
+					r[key1] = r[key2] * q;
+				}
+			}
+			else
+			{
+				long long ss = r[key1]*r[key2];
+				lo = ss & ((1LL << 32) - 1);
+				hi = ss >> 32;
+			}
+			continue;
+		}
+		if (str[j].find("remu", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("remu", 0) + 6; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
 			if (s.find('$', 0) != s.npos)
 			{
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				r[key1] = r[key2] * r[key3];
+				r[key1] = (unsigned) int (r[key2]) % (unsigned) int (r[key3]);
 			}
 			else
 			{
 				int q = atoi(s.c_str());
-				r[key1] = r[key2] * q;
+				r[key1] = (unsigned) int (r[key2]) % (unsigned) int (q);
+			}
+			continue;
+		}
+		if (str[j].find("rem", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("rem", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				r[key1] = r[key2] % r[key3];
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				r[key1] = r[key2] % q;
+			}
+			continue;
+		}
+		if (str[j].find("xoru", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("xoru", 0) + 6; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				r[key1] = (unsigned) int (r[key2])^  (unsigned) int (r[key3]);
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				r[key1] =  (unsigned) int (r[key2])^ (unsigned) int (q);
+			}
+			continue;
+		}
+		if (str[j].find("xor", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("xor", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				r[key1] = r[key2] ^r[key3];
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				r[key1] = r[key2] ^ q;
 			}
 			continue;
 		}
@@ -605,6 +749,39 @@ int main()
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s]; s = ""; k += 2;
 			r[key1] = -r[key2];
+			continue;
+		}
+		if (str[j].find("divu", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("divu", 0) + 6; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s != "")
+			{
+				if (s.find('$', 0) != s.npos)
+				{
+					s.erase(s.begin());
+					if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+					else key3 = to_register[s];
+					r[key1] = unsigned (r[key2]) / unsigned (r[key3]);
+				}
+				else
+				{
+					int q = atoi(s.c_str());
+					r[key1] = unsigned (r[key2]) / unsigned (q);
+				}
+			}
+			else
+			{
+				lo = unsigned (r[key1]) / unsigned (r[key2]);
+				hi = unsigned (r[key1]) % unsigned (r[key2]);
+			}
 			continue;
 		}
 		if (str[j].find("div", 0) != str[j].npos)
@@ -952,6 +1129,106 @@ int main()
 			}
 			continue;
 		}
+		if (str[j].find("seq", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("seq", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				if (r[key2] == r[key3]) r[key1] = 1; else r[key1] = 0;
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				if (r[key2] == q) r[key1] = 1; else r[key1] = 0;
+			}
+			continue;
+		}
+		if (str[j].find("sge", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("sge", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				if (r[key2] >= r[key3]) r[key1] = 1; else r[key1] = 0;
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				if (r[key2] >= q) r[key1] = 1; else r[key1] = 0;
+			}
+			continue;
+		}
+		if (str[j].find("sgt", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("sgt", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				if (r[key2] > r[key3]) r[key1] = 1; else r[key1] = 0;
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				if (r[key2] > q) r[key1] = 1; else r[key1] = 0;
+			}
+			continue;
+		}
+		if (str[j].find("sle", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("sle", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				if (r[key2] <= r[key3]) r[key1] = 1; else r[key1] = 0;
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				if (r[key2] <= q) r[key1] = 1; else r[key1] = 0;
+			}
+			continue;
+		}
 		if (str[j].find("slt", 0) != str[j].npos)
 		{
 			string s = "";
@@ -974,6 +1251,31 @@ int main()
 			{
 				int q = atoi(s.c_str());
 				if (r[key2] < q) r[key1] = 1; else r[key1] = 0;
+			}
+			continue;
+		}
+		if (str[j].find("sne", 0) != str[j].npos)
+		{
+			string s = "";
+			int key1, key2, key3;
+			for (k = str[j].find("sne", 0) + 5; k < str[j].size() && str[j][k] != ','; ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key1 = atoi(s.c_str());
+			else key1 = to_register[s]; s = "";
+			for (k = str[j].find('$', k) + 1; str[j][k] != ',' && k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
+			else key2 = to_register[s]; s = ""; k += 2;
+			for (; k < str[j].size(); ++k) if (str[j][k] != ' ') s += str[j][k];
+			if (s.find('$', 0) != s.npos)
+			{
+				s.erase(s.begin());
+				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
+				else key3 = to_register[s];
+				if (r[key2] != r[key3]) r[key1] = 1; else r[key1] = 0;
+			}
+			else
+			{
+				int q = atoi(s.c_str());
+				if (r[key2] != q) r[key1] = 1; else r[key1] = 0;
 			}
 			continue;
 		}
