@@ -10,6 +10,7 @@ vector<string> str;
 map<string, int> label;
 map<string, int> data_label;
 map<string, int> to_register;
+map<string, int> to_int;
 int hazard = 0;
 int mark = 0;
 int i = -1, j, k = 0;
@@ -63,6 +64,52 @@ void ready()
 	to_register["sp"] = 29;
 	to_register["fp"] = 30;
 	to_register["ra"] = 31;
+	to_int["add"] = 1;
+	to_int["addu"] = 2;
+	to_int["sub"] = 3;
+	to_int["subu"] = 4;
+	to_int["mul"] = 5;
+	to_int["mulu"] = 6;
+	to_int["div"] = 7;
+	to_int["divu"] = 8;
+	to_int["xor"] = 9;
+	to_int["xoru"] = 10;
+	to_int["neg"] = 11;
+	to_int["negu"] = 12;
+	to_int["rem"] = 13;
+	to_int["remu"] = 14;
+	to_int["li"] = 15;
+	to_int["seq"] = 16;
+	to_int["sge"] = 17;
+	to_int["sgt"] = 18;
+	to_int["sle"] = 19;
+	to_int["slt"] = 20;
+	to_int["sne"] = 21;
+	to_int["b"] = 22;
+	to_int["beq"] = 23;
+	to_int["bne"] = 24;
+	to_int["bge"] = 25;
+	to_int["ble"] = 26;
+	to_int["bgt"] = 27;
+	to_int["blt"] = 28;
+	to_int["beqz"] = 29;
+	to_int["bnez"] = 30;
+	to_int["bgez"] = 31;
+	to_int["blez"] = 32;
+	to_int["bgtz"] = 33;
+	to_int["bltz"] = 34;
+	to_int["j"] = 35;
+	to_int["jr"] = 36;
+	to_int["jal"] = 37;
+	to_int["la"] = 38;
+	to_int["lb"] = 39;
+	to_int["lw"] = 40;
+	to_int["sb"] = 41;
+	to_int["sw"] = 42;
+	to_int["move"] = 43;
+	to_int["mfhi"] = 44;
+	to_int["mflo"] = 45;
+	to_int["syscall"] = 46;
 }
 string check(string s)
 {
@@ -91,13 +138,18 @@ int maxx(int x, int y)
 }
 int DH(int x)
 {
-	if (f[x] == 0) f[x] = 1;
-	else
+	if (f[x] == 1)
 	{
 		hazard = 2;
 		mark = 0;
 	}
-	return hazard;
+	return 0;
+}
+int LDH(int x)
+{
+	int m = f[x];
+	f[x] = 1;
+	return m;
 }
 class add
 {
@@ -116,21 +168,21 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
 			type = 1;
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 		}
 		else
 		{
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -139,9 +191,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		//if (type == 1) cout << key1 << ' ' << key2 << ' ' << key3 << ' ' << r[key1] << ' ' << r[key2] << ' ' << r[key3] << endl;
 		r[key1] = ans;
 	}
@@ -162,14 +212,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+		 h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -177,6 +227,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+				h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -185,9 +236,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -207,14 +256,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -222,6 +271,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -230,9 +280,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -252,21 +300,22 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
 			type = 1;
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 		}
 		else
 		{
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -275,9 +324,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -285,7 +332,7 @@ class mul
 {
 private:
 	int key1, key2, key3, type, q, loer, hier, ans;
-	int h;
+	int h,h1,h2;
 public:
 	void DP(string str)
 	{
@@ -297,8 +344,8 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+		 h = maxx(h, DH(key2));
 		if (s != "")
 		{
 			if (s.find('$', 0) != s.npos)
@@ -306,7 +353,7 @@ public:
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+				 h = maxx(h, DH(key3));
 				type = 1;
 			}
 			else
@@ -314,13 +361,16 @@ public:
 				q = atoi(s.c_str());
 				type = 2;
 			}
+			h = maxx(h, LDH(key1));
 		}
 		else
 		{
 			type = 3;
-			h = maxx(h, DH(32));
-			h = maxx(h, DH(33));
+			h = maxx(h, DH(key1));
+			h1 = maxx(h, LDH(32));
+			h2 = maxx(h, LDH(33));
 		}
+
 	}
 	void EX()
 	{
@@ -335,9 +385,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		if (type <= 2) f[key1] = h; else {f[32] = h1;f[33] = h2;}
 		if (type <= 2) r[key1] = ans;
 		else
 		{
@@ -352,7 +400,7 @@ class mulu
 {
 private:
 	int key1, key2, key3, type, q, loer, hier, ans;
-	int h = 0;
+	int h = 0,h1,h2;
 public:
 	void DP(string str)
 	{
@@ -364,8 +412,7 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		h = maxx(h, DH(key2));
 		if (s != "")
 		{
 			if (s.find('$', 0) != s.npos)
@@ -373,7 +420,7 @@ public:
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+				h = maxx(h, DH(key3));
 				type = 1;
 			}
 			else
@@ -381,12 +428,14 @@ public:
 				q = atoi(s.c_str());
 				type = 2;
 			}
+			h = maxx(h, LDH(key1));
 		}
 		else
 		{
 			type = 3;
-			h = maxx(h, DH(32));
-			h = maxx(h, DH(33));
+			h = maxx(h, DH(key1));
+			h = maxx(h, LDH(32));
+			h = maxx(h, LDH(33));
 		}
 	}
 	void EX()
@@ -402,8 +451,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
+		if (type <= 2) f[key1] = h; else {f[32] = h1;f[33] = h2;}
 		if (type == 1) f[key3] = 0;
 		if (type <= 2) r[key1] = ans;
 		else
@@ -419,7 +467,7 @@ class divv
 {
 private:
 	int key1, key2, key3, type, q, loer, hier, ans;
-	int h = 0;
+	int h = 0,h2,h1;
 public:
 	void DP(string str)
 	{
@@ -431,8 +479,8 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s != "")
 		{
 			if (s.find('$', 0) != s.npos)
@@ -441,19 +489,21 @@ public:
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
 				type = 1;
-				if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+				h = maxx(h, DH(key3));
 			}
 			else
 			{
 				q = atoi(s.c_str());
 				type = 2;
 			}
+			h = maxx(h, LDH(key1));
 		}
 		else
 		{
 			type = 3;
-			h = maxx(h, DH(32));
-			h = maxx(h, DH(33));
+			h = maxx(h, DH(key1));
+			h = maxx(h, LDH(32));
+			h = maxx(h, LDH(33));
 		}
 	}
 	void EX()
@@ -468,9 +518,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		if (type <= 2) f[key1] = h; else {f[32] = h1;f[33] = h2;}
 		if (type <= 2) r[key1] = ans;
 		else
 		{
@@ -485,7 +533,7 @@ class divvu
 {
 private:
 	int key1, key2, key3, type, q, loer, hier, ans;
-	int h = 0;
+	int h = 0,h1,h2;
 public:
 	void DP(string str)
 	{
@@ -497,8 +545,8 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+	    h = maxx(h, DH(key2));
 		if (s != "")
 		{
 			if (s.find('$', 0) != s.npos)
@@ -506,7 +554,7 @@ public:
 				s.erase(s.begin());
 				if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 				else key3 = to_register[s];
-				if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+				h = maxx(h, DH(key3));
 				type = 1;
 			}
 			else
@@ -514,12 +562,14 @@ public:
 				q = atoi(s.c_str());
 				type = 2;
 			}
+				h = maxx(h, LDH(key1));
 		}
 		else
 		{
 			type = 3;
-			h = maxx(h, DH(32));
-			h = maxx(h, DH(33));
+			h = maxx(h, DH(key1));
+			h = maxx(h, LDH(32));
+			h = maxx(h, LDH(33));
 		}
 	}
 	void EX()
@@ -534,9 +584,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		if (type <= 2) f[key1] = h; else {f[32] = h1;f[33] = h2;}
 		if (type <= 2) r[key1] = ans;
 		else
 		{
@@ -551,7 +599,7 @@ class xxor
 {
 private:
 	int key1, key2, type, key3, q, ans;
-	int h;
+	int h = 0;
 public:
 	void DP(string str)
 	{
@@ -563,14 +611,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -578,6 +626,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -586,9 +635,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -608,14 +655,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+	h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+		h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -623,6 +670,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -631,9 +679,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -652,8 +698,9 @@ public:
 		for (k = str.find('$', k) + 1; str[k] != ',' && k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = "";
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+		h = maxx(h, DH(key2));
+			h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -661,8 +708,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -681,8 +727,9 @@ public:
 		for (k = str.find('$', k) + 1; str[k] != ',' && k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = "";
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+	h = maxx(h, DH(key2));
+	h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -690,8 +737,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -711,21 +757,22 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		 h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
 			type = 1;
-			if (key1 != key3 && key2 != key3) 	h = maxx(h, DH(key3));
+				h = maxx(h, DH(key3));
 		}
 		else
 		{
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -734,9 +781,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -744,7 +789,7 @@ class remu
 {
 private:
 	int key1, key2, type, key3, q, ans;
-	int h;
+	int h = 0;
 public:
 	void DP(string str)
 	{
@@ -756,14 +801,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -771,6 +816,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -779,9 +825,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -799,12 +843,12 @@ public:
 		else key = to_register[s]; s = "";
 		for (k = str.find(",", 0) + 1; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		p = atoi(s.c_str());
-		h = maxx(h, DH(key));
+		h = maxx(h, LDH(key));
 	}
 	void EX() {}
 	void WB()
 	{
-		f[key] = 0;
+		f[key] = h;
 		r[key] = p;
 	}
 };
@@ -824,14 +868,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -839,6 +883,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+			h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -847,9 +892,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -869,14 +912,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		 h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -884,6 +927,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h,LDH(key1));
 	}
 	void EX()
 	{
@@ -892,9 +936,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -914,14 +956,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+	h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			 h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -929,6 +971,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+			h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -937,9 +980,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -959,14 +1000,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+		 h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -974,6 +1015,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+			h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -982,9 +1024,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -1004,14 +1044,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+	 h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			 h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -1019,6 +1059,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -1027,9 +1068,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -1049,14 +1088,14 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = ""; k += 2;
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+		
+		h = maxx(h, DH(key2));
 		if (s.find('$', 0) != s.npos)
 		{
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key3 = atoi(s.c_str());
 			else key3 = to_register[s];
-			if (key1 != key3 && key2 != key3) h = maxx(h, DH(key3));
+			h = maxx(h, DH(key3));
 			type = 1;
 		}
 		else
@@ -1064,6 +1103,7 @@ public:
 			q = atoi(s.c_str());
 			type = 2;
 		}
+		h = maxx(h, LDH(key1));
 	}
 	void EX()
 	{
@@ -1072,9 +1112,7 @@ public:
 	}
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
-		if (type == 1) f[key3] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -1093,7 +1131,7 @@ public:
 	void EX() {}
 	int WB()
 	{
-		
+
 		return label[s];
 	}
 };
@@ -1119,7 +1157,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+			h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1137,9 +1175,6 @@ public:
 	}
 	int WB()
 	{
-		
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1165,7 +1200,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+			 h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1183,9 +1218,6 @@ public:
 	}
 	int WB()
 	{
-		
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1211,7 +1243,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+		 h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1229,12 +1261,9 @@ public:
 	}
 	int WB()
 	{
-	//	cout << key1 << ' ' << key2 << ' ' << r[key1] << ' ' << r[key2] << endl;
-		if (r[key1] == 4)
-			r[key1] = 4;
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
-		
+		//	cout << key1 << ' ' << key2 << ' ' << r[key1] << ' ' << r[key2] << endl;
+
+
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1260,7 +1289,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+			h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1278,9 +1307,6 @@ public:
 	}
 	int WB()
 	{
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1306,7 +1332,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+			h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1324,9 +1350,6 @@ public:
 	}
 	int WB()
 	{
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1352,7 +1375,7 @@ public:
 			s.erase(s.begin());
 			if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 			else key2 = to_register[s];
-			if (key1 != key2) h = maxx(h, DH(key2));
+			 h = maxx(h, DH(key2));
 			type = 1;
 		}
 		else
@@ -1370,9 +1393,7 @@ public:
 	}
 	int WB()
 	{
-		f[key1] = 0;
-		if (type == 1) f[key2] = 0;
-		
+
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1401,8 +1422,6 @@ public:
 	}
 	int WB()
 	{
-		f[key] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1431,8 +1450,6 @@ public:
 	}
 	int WB()
 	{
-		
-		f[key] = 0;
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1461,8 +1478,6 @@ public:
 	}
 	int WB()
 	{
-		
-		f[key] = 0;
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1491,8 +1506,6 @@ public:
 	}
 	int WB()
 	{
-		f[key] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1514,7 +1527,7 @@ public:
 		for (; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		s += ':';
 		h = maxx(h, DH(key));
-	//	cout << key << ' ' << r[key] << endl;
+		//	cout << key << ' ' << r[key] << endl;
 	}
 	void EX()
 	{
@@ -1522,8 +1535,6 @@ public:
 	}
 	int WB()
 	{
-		f[key] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1552,8 +1563,6 @@ public:
 	}
 	int WB()
 	{
-		f[key] = 0;
-		
 		if (b == true) return label[s]; else return 0;
 	}
 };
@@ -1572,7 +1581,7 @@ public:
 	void EX() {}
 	int WB()
 	{
-		
+
 		return label[s];
 	}
 };
@@ -1594,8 +1603,6 @@ public:
 	void EX() { ans = r[key]; }
 	int WB()
 	{
-		f[key] = 0;
-		
 		return ans;
 	}
 };
@@ -1623,7 +1630,7 @@ public:
 class la
 {
 private:
-	int key, ans,type,ke,p;
+	int key, ans, type, ke, p;
 	int h = 0;
 	string s;
 public:
@@ -1634,7 +1641,7 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s]; s = "";
 		for (k = str.find(",", 0) + 1; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key));
+
 		if (s.find("($", 0) == s.npos)
 		{
 			type = 1;
@@ -1651,9 +1658,10 @@ public:
 			else ke = to_register[ss];
 			//int t = r[ke] + p;
 			type = 2;
-			if (key != ke) h = maxx(h, DH(ke));
+			h = maxx(h, DH(ke));
 			//ans = t;
 		}
+				h = maxx(h, LDH(key));
 	}
 	void EX()
 	{
@@ -1662,8 +1670,7 @@ public:
 	}
 	void WB()
 	{
-		f[key] = 0;
-		if (type == 2) f[ke] = 0;
+		f[key] = h;
 		r[key] = ans;
 	}
 };
@@ -1671,7 +1678,7 @@ class lb
 {
 private:
 	int key, ans, type, ke, p;
-	int h = 0,rr;
+	int h = 0, rr;
 	string s;
 public:
 	void DP(string str)
@@ -1681,7 +1688,7 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s]; s = "";
 		for (k = str.find(",", 0) + 1; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key));
+	
 		if (s.find("($", 0) == s.npos)
 		{
 			type = 1;
@@ -1690,7 +1697,7 @@ public:
 		}
 		else
 		{
-			string ss = ""; 
+			string ss = "";
 			for (k = 0; k < s.find("($", 0); ++k) if (s[k] != ' ') ss += s[k];
 			p = atoi(ss.c_str()); ss = "";
 			for (k = s.find("($", 0) + 2; k < s.size() - 1; ++k) if (s[k] != ' ') ss += s[k];
@@ -1698,9 +1705,10 @@ public:
 			else ke = to_register[ss];
 			//int t = r[ke] + p;
 			type = 2;
-			if (key != ke) h = maxx(h, DH(ke));
+			 h = maxx(h, DH(ke));
 			//ans = t;
 		}
+			h = maxx(h, LDH(key));
 	}
 	void EX()
 	{
@@ -1713,8 +1721,7 @@ public:
 	}
 	void WB()
 	{
-		f[key] = 0;
-		if (type == 2) f[ke] = 0;
+		f[key] = h;
 		r[key] = rr;
 	}
 };
@@ -1732,7 +1739,7 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s]; s = "";
 		for (k = str.find(",", 0) + 1; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key));
+
 		if (s.find("($", 0) == s.npos)
 		{
 			type = 1;
@@ -1741,7 +1748,7 @@ public:
 		}
 		else
 		{
-			string ss = ""; 
+			string ss = "";
 			for (k = 0; k < s.find("($", 0); ++k) if (s[k] != ' ') ss += s[k];
 			p = atoi(ss.c_str()); ss = "";
 			for (k = s.find("($", 0) + 2; k < s.size() - 1; ++k) if (s[k] != ' ') ss += s[k];
@@ -1749,9 +1756,10 @@ public:
 			else ke = to_register[ss];
 			//int t = r[ke] + p;
 			type = 2;
-			if (key != ke) h = maxx(h, DH(ke));
+			 h = maxx(h, DH(ke));
 			//ans = t;
 		}
+				h = maxx(h, LDH(key));
 	}
 	void EX()
 	{
@@ -1760,20 +1768,19 @@ public:
 	}
 	void MA()
 	{
-		rr =(datar[ans].num);
+		rr = (datar[ans].num);
 	}
 	void WB()
 	{
-		f[key] = 0;
-		if (type == 2) f[ke] = 0;
+		f[key] = h;
 		r[key] = rr;
-	//	if (type == 2) cout << ke << ' ' << r[ke] << ' ' << p << ' '<<r[key]<<endl;
+		//	if (type == 2) cout << ke << ' ' << r[ke] << ' ' << p << ' '<<r[key]<<endl;
 	}
 };
 class sb
 {
 private:
-	int key, ans,type,ke,h = 0,rr,p;
+	int key, ans, type, ke, h = 0, rr, p;
 	string s;
 public:
 	void DP(string str)
@@ -1783,7 +1790,7 @@ public:
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s]; s = "";
 		for (k = str.find(",", 0) + 1; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
-		h = maxx(h, DH(key));
+
 		if (s.find("($", 0) == s.npos)
 		{
 			type = 1;
@@ -1792,7 +1799,7 @@ public:
 		}
 		else
 		{
-			string ss = ""; 
+			string ss = "";
 			for (k = 0; k < s.find("($", 0); ++k) if (s[k] != ' ') ss += s[k];
 			p = atoi(ss.c_str()); ss = "";
 			for (k = s.find("($", 0) + 2; k < s.size() - 1; ++k) if (s[k] != ' ') ss += s[k];
@@ -1800,9 +1807,10 @@ public:
 			else ke = to_register[ss];
 			//int t = r[ke] + p;
 			type = 2;
-			if (key != ke) h = maxx(h, DH(ke));
+			 h = maxx(h, DH(ke));
 			//ans = t;
 		}
+				h = maxx(h, DH(key));
 	}
 	void EX()
 	{
@@ -1813,10 +1821,8 @@ public:
 	{
 		datar[ans].chr = char(r[key]);
 	}
-	void WB() 
+	void WB()
 	{
-		f[key] = 0;
-		if (type == 2) f[ke] = 0;
 	}
 };
 class sw
@@ -1841,7 +1847,7 @@ public:
 		}
 		else
 		{
-			string ss = ""; 
+			string ss = "";
 			for (k = 0; k < s.find("($", 0); ++k) if (s[k] != ' ') ss += s[k];
 			p = atoi(ss.c_str()); ss = "";
 			for (k = s.find("($", 0) + 2; k < s.size() - 1; ++k) if (s[k] != ' ') ss += s[k];
@@ -1849,7 +1855,7 @@ public:
 			else ke = to_register[ss];
 			//int t = r[ke] + p;
 			type = 2;
-			if (key != ke) h = maxx(h, DH(ke));
+		    h = maxx(h, DH(ke));
 			//ans = t;
 		}
 	}
@@ -1864,9 +1870,7 @@ public:
 	}
 	void WB()
 	{
-		f[key] = 0;
-		if (type == 2) f[ke] = 0;
-	//	if (type == 2) cout << ke << ' ' << r[ke] << ' ' << p <<' '<<key<<' '<<r[key]<< endl;
+		//	if (type == 2) cout << ke << ' ' << r[ke] << ' ' << p <<' '<<key<<' '<<r[key]<< endl;
 	}
 };
 class mov
@@ -1884,14 +1888,14 @@ public:
 		for (k = str.find('$', k) + 1; str[k] != ',' && k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		if (s[0] >= '0' && s[0] <= '9') key2 = atoi(s.c_str());
 		else key2 = to_register[s]; s = "";
-		h = maxx(h, DH(key1));
-		if (key1 != key2) h = maxx(h, DH(key2));
+	
+	    h = maxx(h, DH(key2));
+	    	h = maxx(h, LDH(key1));
 	}
 	void EX() { ans = r[key2]; }
 	void WB()
 	{
-		f[key1] = 0;
-		f[key2] = 0;
+		f[key1] = h;
 		r[key1] = ans;
 	}
 };
@@ -1907,14 +1911,14 @@ public:
 		for (k = str.find("mfhi", 0) + 6; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s];
-		h = maxx(h, DH(key));
+	
 		h = maxx(h, DH(32));
+			h = maxx(h, LDH(key));
 	}
 	void EX() { ans = hi; }
 	void WB()
 	{
-		f[key] = 0;
-		f[32] = 0;
+		f[key] = h;
 		r[key] = ans;
 	}
 };
@@ -1930,14 +1934,14 @@ public:
 		for (k = str.find("mflo", 0) + 6; k < str.size(); ++k) if (str[k] != ' ') s += str[k];
 		if (s[0] >= '0' && s[0] <= '9') key = atoi(s.c_str());
 		else key = to_register[s];
-		h = maxx(h, DH(key));
+		
 		h = maxx(h, DH(33));
+		h = maxx(h, LDH(key));
 	}
 	void EX() { ans = lo; }
 	void WB()
 	{
-		f[key] = 0;
-		f[33] = 0;
+		f[key] = h;
 		r[key] = ans;
 	}
 };
@@ -1952,17 +1956,18 @@ private:
 		else return -x;
 	}
 public:
-	void DP() 
+	void DP()
 	{
 		h = maxx(h, DH(2));
 		h = maxx(h, DH(4));
+		if (r[2] == 5 || r[2] == 9) h = maxx(h,LDH(2));
 	}
 	void EX() {}
 	void MA() {}
 	int WB()
 	{
-		f[2] = 0;
-		f[4] = 0;
+		
+	     if (r[2] == 5 || r[2] == 9) f[2] = h;
 		//cout << r[2] << ' ' << r[4] << endl;
 		if (r[2] == 1) cout << r[4]; else
 			if (r[2] == 4) {
@@ -2013,12 +2018,12 @@ string get_name(string s)
 	for (int k = 0; k < s.size() && s[k] != ' '; ++k) ss += s[k];
 	return ss;
 }
-int main(int agrc,char * agrv[])
+int main(int agrc,char * argv[])
 {
 	r[29] = N;
 	ready();
-	FILE *stdin1 = fopen(agrv[1], "r");
-//	FILE *stdin2 = fopen("array_test1-mahaojun.in", "r");
+	FILE *stdin1 = fopen(argv[1], "r");
+	//	FILE *stdin2 = fopen("array_test1-mahaojun.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
 	{
@@ -2026,6 +2031,7 @@ int main(int agrc,char * agrv[])
 		string s = chr;
 		while (s[0] == '\t' || s[0] == ' ') s.erase(s.begin());
 		str.push_back(s);
+		//cout<<i <<' '<<s<<endl;
 		if (s[s.size() - 1] == ':')
 		{
 			label[s] = i;
@@ -2182,7 +2188,7 @@ int main(int agrc,char * agrv[])
 	j = label["main:"];
 	int status[5] = { 0 };
 	string s[5];
-	string name[5];
+	int name[5] = {0};
 	add adder[5];
 	addu adduer[5];
 	sub suber[5];
@@ -2229,7 +2235,7 @@ int main(int agrc,char * agrv[])
 	mfhi mfhier[5];
 	mflo mfloer[5];
 	syscall syscaller[5];
-	int i = 5 ,i0 ,t0,laststone = 0;
+	int i = 5, i0, t0, laststone = 0;
 	while (true)
 	{
 		--i;
@@ -2242,12 +2248,12 @@ int main(int agrc,char * agrv[])
 			{
 				i = 4;
 				for (int ii = 0; ii <= 4; ++ii) {
-					status[ii] = 0; s[ii] = ""; name[ii] = "";
+					status[ii] = 0; s[ii] = ""; name[ii] = 0;
 				}
 				for (int ii = 0; ii <= 33; ++ii) f[ii] = 0;
 				if (hazard == 1)
 				{
-					if (laststone == 1) ++j; 
+					if (laststone == 1) ++j;
 					laststone = 0;
 				}
 				else --j;
@@ -2266,196 +2272,196 @@ int main(int agrc,char * agrv[])
 		{
 			int t = (k + i) % 5;
 
-			if (k == 0) 
-			{ 
+			if (k == 0)
+			{
 				if (status[t] != 0 || hazard != 0) continue;
 				while (label[str[j]] != 0)
 					++j;
 				s[t] = str[j];
-				name[t] = get_name(s[t]); 
-				 status[t] = 1;
-				//cout << j << '\t' << str[j] << endl;
-			}
+				name[t] = to_int[get_name(s[t])];
+				status[t] = 1;
+			//	cout << j << '\t' << str[j] << endl;
+			}else
 			if (k == 1)
 			{
-			if (status[t] <= 0) continue;
-			if (hazard != 0) continue;
-			if (name[t] == "add") adder[t].DP(s[t]);
-			if (name[t] == "addu") adduer[t].DP(s[t]);
-			if (name[t] == "sub") suber[t].DP(s[t]);
-			if (name[t] == "subu") subuer[t].DP(s[t]);
-			if (name[t] == "mul") muler[t].DP(s[t]);
-			if (name[t] == "mulu") muluer[t].DP(s[t]);
-			if (name[t] == "div") divver[t].DP(s[t]);
-			if (name[t] == "divu") divvuer[t].DP(s[t]);
-			if (name[t] == "xor") xxorer[t].DP(s[t]);
-			if (name[t] == "xoru") xxoruer[t].DP(s[t]);
-			if (name[t] == "neg") neger[t].DP(s[t]);
-			if (name[t] == "negu") neguer[t].DP(s[t]);
-			if (name[t] == "rem") remer[t].DP(s[t]);
-			if (name[t] == "remu") remuer[t].DP(s[t]);
-			if (name[t] == "li") lier[t].DP(s[t]);
-			if (name[t] == "seq") seqer[t].DP(s[t]);
-			if (name[t] == "sge") sgeer[t].DP(s[t]);
-			if (name[t] == "sgt") sgter[t].DP(s[t]);
-			if (name[t] == "sle") sleer[t].DP(s[t]);
-			if (name[t] == "slt") slter[t].DP(s[t]);
-			if (name[t] == "sne") sneer[t].DP(s[t]);
-			if (name[t] == "b") bber[t].DP(s[t]);
-			if (name[t] == "beq") beqer[t].DP(s[t]);
-			if (name[t] == "bne") bneer[t].DP(s[t]);
-			if (name[t] == "bge") bgeer[t].DP(s[t]);
-			if (name[t] == "ble") bleer[t].DP(s[t]);
-			if (name[t] == "bgt") bgter[t].DP(s[t]);
-			if (name[t] == "blt") blter[t].DP(s[t]);
-			if (name[t] == "beqz") beqzer[t].DP(s[t]);
-			if (name[t] == "bnez") bnezer[t].DP(s[t]);
-			if (name[t] == "bgez") bgezer[t].DP(s[t]);
-			if (name[t] == "blez") blezer[t].DP(s[t]);
-			if (name[t] == "bgtz") bgtzer[t].DP(s[t]);
-			if (name[t] == "bltz") bltzer[t].DP(s[t]);
-			if (name[t] == "j") jjer[t].DP(s[t]);
-			if (name[t] == "jr") jrer[t].DP(s[t]);
-			if (name[t] == "jal") jaler[t].DP(s[t], j - 1);
-			if (name[t] == "la") laer[t].DP(s[t]);
-			if (name[t] == "lb") lber[t].DP(s[t]);
-			if (name[t] == "lw") lwer[t].DP(s[t]);
-			if (name[t] == "sb") sber[t].DP(s[t]);
-			if (name[t] == "sw") swer[t].DP(s[t]);
-			if (name[t] == "move") mover[t].DP(s[t]);
-			if (name[t] == "mfhi") mfhier[t].DP(s[t]);
-			if (name[t] == "mflo") mfloer[t].DP(s[t]);
-			if (name[t] == "syscall") syscaller[t].DP();
-			if (hazard == 2)
-			{
-				i0 = i;
-				t0 = t;
-				status[t] = -1;
-				status[(t + 4) % 5] = -1;
-				status[(t + 3) % 5] = -1;
-			}
-			if (hazard == 1)
-			{
-				i0 = i;
-				t0 = t;
-				status[(t + 4) % 5] = -1;
-				status[(t + 3) % 5] = -1;
-			}
-			}
+				if (status[t] <= 0) continue;
+				if (hazard != 0) continue;
+				if (name[t] == 1) { adder[t].DP(s[t]);  }else
+				if (name[t] == 2) { adduer[t].DP(s[t]);  }else
+				if (name[t] == 3) { suber[t].DP(s[t]);}else
+				if (name[t] == 4) { subuer[t].DP(s[t]);  }else
+				if (name[t] == 5) { muler[t].DP(s[t]);  }else
+				if (name[t] == 6) { muluer[t].DP(s[t]);  }else
+				if (name[t] == 7) { divver[t].DP(s[t]);  }else
+				if (name[t] == 8) { divvuer[t].DP(s[t]);  }else
+				if (name[t] == 9) { xxorer[t].DP(s[t]);  }else
+				if (name[t] == 10) { xxoruer[t].DP(s[t]);  }else
+				if (name[t] == 11) { neger[t].DP(s[t]);  }else
+				if (name[t] == 12) { neguer[t].DP(s[t]);  }else
+				if (name[t] == 13) { remer[t].DP(s[t]);  }else
+				if (name[t] == 14) { remuer[t].DP(s[t]);  }else
+				if (name[t] == 15) { lier[t].DP(s[t]);  }else
+				if (name[t] == 16) { seqer[t].DP(s[t]);  }else
+				if (name[t] == 17) { sgeer[t].DP(s[t]);  }else
+				if (name[t] == 18) { sgter[t].DP(s[t]);  }else
+				if (name[t] == 19) { sleer[t].DP(s[t]);  }else
+				if (name[t] == 20) { slter[t].DP(s[t]);  }else
+				if (name[t] == 21) { sneer[t].DP(s[t]);  }else
+				if (name[t] == 22) { bber[t].DP(s[t]);  }else
+				if (name[t] == 23) { beqer[t].DP(s[t]);  }else
+				if (name[t] == 24) { bneer[t].DP(s[t]);  }else
+				if (name[t] == 25) { bgeer[t].DP(s[t]);  }else
+				if (name[t] == 26) { bleer[t].DP(s[t]);  }else
+				if (name[t] == 27) { bgter[t].DP(s[t]);  }else
+				if (name[t] == 28) { blter[t].DP(s[t]);  }else
+				if (name[t] == 29) { beqzer[t].DP(s[t]);  }else
+				if (name[t] == 30) { bnezer[t].DP(s[t]);  }else
+				if (name[t] == 31) { bgezer[t].DP(s[t]);  }else
+				if (name[t] == 32) { blezer[t].DP(s[t]);  }else
+				if (name[t] == 33) { bgtzer[t].DP(s[t]);  }else
+				if (name[t] == 34) { bltzer[t].DP(s[t]);  }else
+				if (name[t] == 35) { jjer[t].DP(s[t]);  }else
+				if (name[t] == 36) { jrer[t].DP(s[t]);  }else
+				if (name[t] == 37) { jaler[t].DP(s[t], j - 1);  }else
+				if (name[t] == 38) { laer[t].DP(s[t]);  }else
+				if (name[t] == 39) { lber[t].DP(s[t]);  }else
+				if (name[t] == 40) { lwer[t].DP(s[t]);  }else
+				if (name[t] == 41) { sber[t].DP(s[t]);  }else
+				if (name[t] == 42) { swer[t].DP(s[t]);  }else
+				if (name[t] == 43) { mover[t].DP(s[t]);  }else
+				if (name[t] == 44) { mfhier[t].DP(s[t]);  }else
+				if (name[t] == 45) { mfloer[t].DP(s[t]);  }else
+				if (name[t] == 46) { syscaller[t].DP();  }
+				if (hazard == 2)
+				{
+					i0 = i;
+					t0 = t;
+					status[t] = -1;
+					status[(t + 4) % 5] = -1;
+					status[(t + 3) % 5] = -1;
+				}
+				if (hazard == 1)
+				{
+					i0 = i;
+					t0 = t;
+					status[(t + 4) % 5] = -1;
+					status[(t + 3) % 5] = -1;
+				}
+			}else
 			if (k == 2)
 			{
 				if (status[t] <= 0) continue;
-				if (name[t] == "add") adder[t].EX();
-				if (name[t] == "addu") adduer[t].EX();
-				if (name[t] == "sub") suber[t].EX();
-				if (name[t] == "subu") subuer[t].EX();
-				if (name[t] == "mul") muler[t].EX();
-				if (name[t] == "mulu") muluer[t].EX();
-				if (name[t] == "div") divver[t].EX();
-				if (name[t] == "divu") divvuer[t].EX();
-				if (name[t] == "xor") xxorer[t].EX();
-				if (name[t] == "xoru") xxoruer[t].EX();
-				if (name[t] == "neg") neger[t].EX();
-				if (name[t] == "negu") neguer[t].EX();
-				if (name[t] == "rem") remer[t].EX();
-				if (name[t] == "remu") remuer[t].EX();
-				if (name[t] == "li") lier[t].EX();
-				if (name[t] == "seq") seqer[t].EX();
-				if (name[t] == "sge") sgeer[t].EX();
-				if (name[t] == "sgt") sgter[t].EX();
-				if (name[t] == "sle") sleer[t].EX();
-				if (name[t] == "slt") slter[t].EX();
-				if (name[t] == "sne") sneer[t].EX();
-				if (name[t] == "b") bber[t].EX();
-				if (name[t] == "beq") beqer[t].EX();
-				if (name[t] == "bne") bneer[t].EX();
-				if (name[t] == "bge") bgeer[t].EX();
-				if (name[t] == "ble") bleer[t].EX();
-				if (name[t] == "bgt") bgter[t].EX();
-				if (name[t] == "blt") blter[t].EX();
-				if (name[t] == "beqz") beqzer[t].EX();
-				if (name[t] == "bnez") bnezer[t].EX();
-				if (name[t] == "bgez") bgezer[t].EX();
-				if (name[t] == "blez") blezer[t].EX();
-				if (name[t] == "bgtz") bgtzer[t].EX();
-				if (name[t] == "bltz") bltzer[t].EX();
-				if (name[t] == "j") jjer[t].EX();
-				if (name[t] == "jr") jrer[t].EX();
-				if (name[t] == "jal") jaler[t].EX();
-				if (name[t] == "la") laer[t].EX();
-				if (name[t] == "lb") lber[t].EX();
-				if (name[t] == "lw") lwer[t].EX();
-				if (name[t] == "sb") sber[t].EX();
-				if (name[t] == "sw") swer[t].EX();
-				if (name[t] == "move") mover[t].EX();
-				if (name[t] == "mfhi") mfhier[t].EX();
-				if (name[t] == "mflo") mfloer[t].EX();
-				if (name[t] == "syscall") syscaller[t].EX();
-			}
+				if (name[t] == 1) { adder[t].EX(); }else
+				if (name[t] == 2) { adduer[t].EX();  }else
+				if (name[t] == 3) { suber[t].EX();  }else
+				if (name[t] == 4) { subuer[t].EX();  }else
+				if (name[t] == 5) { muler[t].EX();  }else
+				if (name[t] == 6) { muluer[t].EX();  }else
+				if (name[t] == 7) { divver[t].EX();  }else
+				if (name[t] == 8) { divvuer[t].EX();  }else
+				if (name[t] == 9) { xxorer[t].EX();  }else
+				if (name[t] == 10) { xxoruer[t].EX();  }else
+				if (name[t] == 11) { neger[t].EX();  }else
+				if (name[t] == 12) { neguer[t].EX();  }else
+				if (name[t] == 13) { remer[t].EX();  }else
+				if (name[t] == 14) { remuer[t].EX();  }else
+				if (name[t] == 15) { lier[t].EX();  }else
+				if (name[t] == 16) { seqer[t].EX();  }else
+				if (name[t] == 17) { sgeer[t].EX();  }else
+				if (name[t] == 18) { sgter[t].EX();  }else
+				if (name[t] == 19) { sleer[t].EX();  }else
+				if (name[t] == 20) { slter[t].EX();  }else
+				if (name[t] == 21) { sneer[t].EX();  }else
+				if (name[t] == 22) { bber[t].EX();  }else
+				if (name[t] == 23) { beqer[t].EX();  }else
+				if (name[t] == 24) { bneer[t].EX();  }else
+				if (name[t] == 25) { bgeer[t].EX();  }else
+				if (name[t] == 26) { bleer[t].EX();  }else
+				if (name[t] == 27) { bgter[t].EX();  }else
+				if (name[t] == 28) { blter[t].EX();  }else
+				if (name[t] == 29) { beqzer[t].EX();  }else
+				if (name[t] == 30) { bnezer[t].EX();  }else
+				if (name[t] == 31) { bgezer[t].EX();  }else
+				if (name[t] == 32) { blezer[t].EX();  }else
+				if (name[t] == 33) { bgtzer[t].EX();  }else
+				if (name[t] == 34) { bltzer[t].EX();  }else
+				if (name[t] == 35) { jjer[t].EX();  }else
+				if (name[t] == 36) { jrer[t].EX();  }else
+				if (name[t] == 37) { jaler[t].EX();  }else
+				if (name[t] == 38) { laer[t].EX();  }else
+				if (name[t] == 39) { lber[t].EX();  }else
+				if (name[t] == 40) { lwer[t].EX();  }else
+				if (name[t] == 41) { sber[t].EX();  }else
+				if (name[t] == 42) { swer[t].EX();  }else
+				if (name[t] == 43) { mover[t].EX();  }else
+				if (name[t] == 44) { mfhier[t].EX();  }else
+				if (name[t] == 45) { mfloer[t].EX();  }else
+				if (name[t] == 46) { syscaller[t].EX();  }
+			}else
 			if (k == 3)
 			{
 				if (status[t] <= 0) continue;
-				if (name[t] == "lb") lber[t].MA();
-				if (name[t] == "lw") lwer[t].MA();
-				if (name[t] == "sb") sber[t].MA();
-				if (name[t] == "sw") swer[t].MA();
-				if (name[t] == "syscall") syscaller[t].MA();
-			}
+				if (name[t] == 39) { lber[t].MA();  }else
+				if (name[t] == 40) { lwer[t].MA();  }else
+				if (name[t] == 41) { sber[t].MA();  }else
+				if (name[t] == 42) { swer[t].MA();  }else
+				if (name[t] == 46) { syscaller[t].MA();  }
+			}else
 			if (k == 4)
 			{
 				if (status[t] <= 0) continue;
 				int tmp = 0, mark = 0;
-				if (name[t] == "add") {adder[t].WB(); status[t] = 0;}
-				if (name[t] == "addu"){ adduer[t].WB(); status[t] = 0;}
-				if (name[t] == "sub"){ suber[t].WB(); status[t] = 0;}
-				if (name[t] == "subu"){ subuer[t].WB(); status[t] = 0;}
-				if (name[t] == "mul"){ muler[t].WB(); status[t] = 0;}
-				if (name[t] == "mulu"){ muluer[t].WB(); status[t] = 0;}
-				if (name[t] == "div"){ divver[t].WB(); status[t] = 0;}
-				if (name[t] == "divu"){ divvuer[t].WB(); status[t] = 0;}
-				if (name[t] == "xor"){ xxorer[t].WB(); status[t] = 0;}
-				if (name[t] == "xoru"){ xxoruer[t].WB(); status[t] = 0;}
-				if (name[t] == "neg"){ neger[t].WB(); status[t] = 0;}
-				if (name[t] == "negu"){ neguer[t].WB(); status[t] = 0;}
-				if (name[t] == "rem"){ remer[t].WB(); status[t] = 0;}
-				if (name[t] == "remu"){ remuer[t].WB(); status[t] = 0;}
-				if (name[t] == "li"){ lier[t].WB(); status[t] = 0;}
-				if (name[t] == "seq"){ seqer[t].WB(); status[t] = 0;}
-				if (name[t] == "sge"){ sgeer[t].WB(); status[t] = 0;}
-				if (name[t] == "sgt"){ sgter[t].WB(); status[t] = 0;}
-				if (name[t] == "sle"){ sleer[t].WB(); status[t] = 0;}
-				if (name[t] == "slt"){ slter[t].WB(); status[t] = 0;}
-				if (name[t] == "sne"){ sneer[t].WB(); status[t] = 0;}
-				if (name[t] == "b"){ tmp = bber[t].WB(); status[t] = 0;}
-				if (name[t] == "beq"){ tmp = beqer[t].WB(); status[t] = 0;}
-				if (name[t] == "bne"){ tmp = bneer[t].WB(); status[t] = 0;}
-				if (name[t] == "bge"){ tmp = bgeer[t].WB(); status[t] = 0;}
-				if (name[t] == "ble"){ tmp = bleer[t].WB(); status[t] = 0;}
-				if (name[t] == "bgt"){ tmp = bgter[t].WB(); status[t] = 0;}
-				if (name[t] == "blt"){ tmp = blter[t].WB(); status[t] = 0;}
-				if (name[t] == "beqz"){ tmp = beqzer[t].WB(); status[t] = 0;}
-				if (name[t] == "bnez"){ tmp = bnezer[t].WB(); status[t] = 0;}
-				if (name[t] == "bgez"){ tmp = bgezer[t].WB(); status[t] = 0;}
-				if (name[t] == "blez"){ tmp = blezer[t].WB(); status[t] = 0;}
-				if (name[t] == "bgtz"){ tmp = bgtzer[t].WB(); status[t] = 0;}
-				if (name[t] == "bltz"){ tmp = bltzer[t].WB(); status[t] = 0;}
-				if (name[t] == "j"){ tmp = jjer[t].WB(); status[t] = 0;}
-				if (name[t] == "jr"){ tmp = jrer[t].WB(); status[t] = 0;}
-				if (name[t] == "jal"){ tmp = jaler[t].WB(); status[t] = 0;}
-				if (name[t] == "la"){ laer[t].WB(); status[t] = 0;}
-				if (name[t] == "lb"){ lber[t].WB(); status[t] = 0;}
-				if (name[t] == "lw"){ lwer[t].WB(); status[t] = 0;}
-				if (name[t] == "sb"){ sber[t].WB(); status[t] = 0;}
-				if (name[t] == "sw"){ swer[t].WB(); status[t] = 0;}
-				if (name[t] == "move"){ mover[t].WB(); status[t] = 0;}
-				if (name[t] == "mfhi"){ mfhier[t].WB(); status[t] = 0;}
-				if (name[t] == "mflo"){ mfloer[t].WB(); status[t] = 0;}
-				if (name[t] == "syscall"){ mark = syscaller[t].WB(); status[t] = 0;}
-				if (tmp != 0) 
+				if (name[t] == 1) { adder[t].WB(); status[t] = 0;  }else
+				if (name[t] == 2) { adduer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 3) { suber[t].WB(); status[t] = 0;  }else
+				if (name[t] == 4) { subuer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 5) { muler[t].WB(); status[t] = 0;  }else
+				if (name[t] == 6) { muluer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 7) { divver[t].WB(); status[t] = 0;  }else
+				if (name[t] == 8) { divvuer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 9) { xxorer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 10) { xxoruer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 11) { neger[t].WB(); status[t] = 0;  }else
+				if (name[t] == 12) { neguer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 13) { remer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 14) { remuer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 15) { lier[t].WB(); status[t] = 0;  }else
+				if (name[t] == 16) { seqer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 17) { sgeer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 18) { sgter[t].WB(); status[t] = 0;  }else
+				if (name[t] == 19) { sleer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 20) { slter[t].WB(); status[t] = 0;  }else
+				if (name[t] == 21) { sneer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 22) { tmp = bber[t].WB(); status[t] = 0;  }else
+				if (name[t] == 23) { tmp = beqer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 24) { tmp = bneer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 25) { tmp = bgeer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 26) { tmp = bleer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 27) { tmp = bgter[t].WB(); status[t] = 0;  }else
+				if (name[t] == 28) { tmp = blter[t].WB(); status[t] = 0;  }else
+				if (name[t] == 29) { tmp = beqzer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 30) { tmp = bnezer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 31) { tmp = bgezer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 32) { tmp = blezer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 33) { tmp = bgtzer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 34) { tmp = bltzer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 35) { tmp = jjer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 36) { tmp = jrer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 37) { tmp = jaler[t].WB(); status[t] = 0;  }else
+				if (name[t] == 38) { laer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 39) { lber[t].WB(); status[t] = 0;  }else
+				if (name[t] == 40) { lwer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 41) { sber[t].WB(); status[t] = 0;  }else
+				if (name[t] == 42) { swer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 43) { mover[t].WB(); status[t] = 0;  }else
+				if (name[t] == 44) { mfhier[t].WB(); status[t] = 0;  }else
+				if (name[t] == 45) { mfloer[t].WB(); status[t] = 0;  }else
+				if (name[t] == 46) { mark = syscaller[t].WB(); status[t] = 0;  }
+				if (tmp != 0)
 				{
 					laststone = 1; j = tmp;
 				}
-				if (name[t] == "syscall" && mark != -1) return mark;
+				if (name[t] == 46 && mark != -1) return mark;
 			}
 		}
 	}
