@@ -2013,7 +2013,7 @@ string get_name(string s)
 	for (int k = 0; k < s.size() && s[k] != ' '; ++k) ss += s[k];
 	return ss;
 }
-int main(int agrc,char* agrv[])
+int main(int agrc,char * agrv[])
 {
 	r[29] = N;
 	ready();
@@ -2248,8 +2248,6 @@ int main(int agrc,char* agrv[])
 				if (hazard == 1)
 				{
 					if (laststone == 1) ++j; 
-					if (j == 417)
-						j = 417;
 					laststone = 0;
 				}
 				else --j;
