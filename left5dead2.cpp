@@ -367,8 +367,8 @@ public:
 		{
 			type = 3;
 			h = maxx(h, DH(key1));
-			h1 = maxx(h, LDH(32));
-			h2 = maxx(h, LDH(33));
+			h1 = maxx(h1, LDH(32));
+			h2 = maxx(h2, LDH(33));
 		}
 
 	}
@@ -389,8 +389,6 @@ public:
 		if (type <= 2) r[key1] = ans;
 		else
 		{
-			f[32] = 0;
-			f[33] = 0;
 			lo = loer;
 			hi = hier;
 		}
@@ -434,8 +432,8 @@ public:
 		{
 			type = 3;
 			h = maxx(h, DH(key1));
-			h = maxx(h, LDH(32));
-			h = maxx(h, LDH(33));
+			h1 = maxx(h1, LDH(32));
+			h2 = maxx(h2, LDH(33));
 		}
 	}
 	void EX()
@@ -458,8 +456,6 @@ public:
 		{
 			lo = loer;
 			hi = hier;
-			f[32] = 0;
-			f[33] = 0;
 		}
 	}
 };
@@ -502,8 +498,8 @@ public:
 		{
 			type = 3;
 			h = maxx(h, DH(key1));
-			h = maxx(h, LDH(32));
-			h = maxx(h, LDH(33));
+			h1 = maxx(h1, LDH(32));
+			h2 = maxx(h2, LDH(33));
 		}
 	}
 	void EX()
@@ -522,8 +518,6 @@ public:
 		if (type <= 2) r[key1] = ans;
 		else
 		{
-			f[32] = 0;
-			f[33] = 0;
 			lo = loer;
 			hi = hier;
 		}
@@ -568,8 +562,8 @@ public:
 		{
 			type = 3;
 			h = maxx(h, DH(key1));
-			h = maxx(h, LDH(32));
-			h = maxx(h, LDH(33));
+			h1 = maxx(h1, LDH(32));
+			h2 = maxx(h2, LDH(33));
 		}
 	}
 	void EX()
@@ -590,8 +584,6 @@ public:
 		{
 			lo = loer;
 			hi = hier;
-			f[32] = 0;
-			f[33] = 0;
 		}
 	}
 };
@@ -2018,11 +2010,11 @@ string get_name(string s)
 	for (int k = 0; k < s.size() && s[k] != ' '; ++k) ss += s[k];
 	return ss;
 }
-int main(int agrc,char * argv[])
+int main()
 {
 	r[29] = N;
 	ready();
-	FILE *stdin1 = fopen(argv[1], "r");
+	FILE *stdin1 = fopen("array_test1-mahaojun.s", "r");
 	//	FILE *stdin2 = fopen("array_test1-mahaojun.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
@@ -2286,52 +2278,55 @@ int main(int agrc,char * argv[])
 			{
 				if (status[t] <= 0) continue;
 				if (hazard != 0) continue;
-				if (name[t] == 1) { adder[t].DP(s[t]);  }else
-				if (name[t] == 2) { adduer[t].DP(s[t]);  }else
-				if (name[t] == 3) { suber[t].DP(s[t]);}else
-				if (name[t] == 4) { subuer[t].DP(s[t]);  }else
-				if (name[t] == 5) { muler[t].DP(s[t]);  }else
-				if (name[t] == 6) { muluer[t].DP(s[t]);  }else
-				if (name[t] == 7) { divver[t].DP(s[t]);  }else
-				if (name[t] == 8) { divvuer[t].DP(s[t]);  }else
-				if (name[t] == 9) { xxorer[t].DP(s[t]);  }else
-				if (name[t] == 10) { xxoruer[t].DP(s[t]);  }else
-				if (name[t] == 11) { neger[t].DP(s[t]);  }else
-				if (name[t] == 12) { neguer[t].DP(s[t]);  }else
-				if (name[t] == 13) { remer[t].DP(s[t]);  }else
-				if (name[t] == 14) { remuer[t].DP(s[t]);  }else
-				if (name[t] == 15) { lier[t].DP(s[t]);  }else
-				if (name[t] == 16) { seqer[t].DP(s[t]);  }else
-				if (name[t] == 17) { sgeer[t].DP(s[t]);  }else
-				if (name[t] == 18) { sgter[t].DP(s[t]);  }else
-				if (name[t] == 19) { sleer[t].DP(s[t]);  }else
-				if (name[t] == 20) { slter[t].DP(s[t]);  }else
-				if (name[t] == 21) { sneer[t].DP(s[t]);  }else
-				if (name[t] == 22) { bber[t].DP(s[t]);  }else
-				if (name[t] == 23) { beqer[t].DP(s[t]);  }else
-				if (name[t] == 24) { bneer[t].DP(s[t]);  }else
-				if (name[t] == 25) { bgeer[t].DP(s[t]);  }else
-				if (name[t] == 26) { bleer[t].DP(s[t]);  }else
-				if (name[t] == 27) { bgter[t].DP(s[t]);  }else
-				if (name[t] == 28) { blter[t].DP(s[t]);  }else
-				if (name[t] == 29) { beqzer[t].DP(s[t]);  }else
-				if (name[t] == 30) { bnezer[t].DP(s[t]);  }else
-				if (name[t] == 31) { bgezer[t].DP(s[t]);  }else
-				if (name[t] == 32) { blezer[t].DP(s[t]);  }else
-				if (name[t] == 33) { bgtzer[t].DP(s[t]);  }else
-				if (name[t] == 34) { bltzer[t].DP(s[t]);  }else
-				if (name[t] == 35) { jjer[t].DP(s[t]);  }else
-				if (name[t] == 36) { jrer[t].DP(s[t]);  }else
-				if (name[t] == 37) { jaler[t].DP(s[t], j - 1);  }else
-				if (name[t] == 38) { laer[t].DP(s[t]);  }else
-				if (name[t] == 39) { lber[t].DP(s[t]);  }else
-				if (name[t] == 40) { lwer[t].DP(s[t]);  }else
-				if (name[t] == 41) { sber[t].DP(s[t]);  }else
-				if (name[t] == 42) { swer[t].DP(s[t]);  }else
-				if (name[t] == 43) { mover[t].DP(s[t]);  }else
-				if (name[t] == 44) { mfhier[t].DP(s[t]);  }else
-				if (name[t] == 45) { mfloer[t].DP(s[t]);  }else
-				if (name[t] == 46) { syscaller[t].DP();  }
+				switch(name[t])
+				{
+				case 1: adder[t].DP(s[t]);  break;
+				case 2: adduer[t].DP(s[t]);  break;
+				case 3: suber[t].DP(s[t]);break;
+				case 4: subuer[t].DP(s[t]);  break;
+				case 5: muler[t].DP(s[t]);  break;
+				case 6: muluer[t].DP(s[t]);  break;
+				case 7: divver[t].DP(s[t]);  break;
+				case 8: divvuer[t].DP(s[t]);  break;
+				case 9: xxorer[t].DP(s[t]);  break;
+				case 10: xxoruer[t].DP(s[t]);  break;
+				case 11: neger[t].DP(s[t]);  break;
+				case 12: neguer[t].DP(s[t]);  break;
+				case 13: remer[t].DP(s[t]);  break;
+				case 14: remuer[t].DP(s[t]);  break;
+				case 15: lier[t].DP(s[t]);  break;
+				case 16: seqer[t].DP(s[t]);  break;
+				case 17: sgeer[t].DP(s[t]);  break;
+				case 18: sgter[t].DP(s[t]);  break;
+				case 19: sleer[t].DP(s[t]);  break;
+				case 20: slter[t].DP(s[t]);  break;
+				case 21: sneer[t].DP(s[t]);  break;
+				case 22: bber[t].DP(s[t]);  break;
+				case 23: beqer[t].DP(s[t]);  break;
+				case 24: bneer[t].DP(s[t]);  break;
+				case 25: bgeer[t].DP(s[t]);  break;
+				case 26: bleer[t].DP(s[t]);  break;
+				case 27: bgter[t].DP(s[t]);  break;
+				case 28: blter[t].DP(s[t]);  break;
+				case 29: beqzer[t].DP(s[t]);  break;
+				case 30: bnezer[t].DP(s[t]);  break;
+				case 31: bgezer[t].DP(s[t]);  break;
+				case 32: blezer[t].DP(s[t]);  break;
+				case 33: bgtzer[t].DP(s[t]);  break;
+				case 34: bltzer[t].DP(s[t]);  break;
+				case 35: jjer[t].DP(s[t]);  break;
+				case 36: jrer[t].DP(s[t]);  break;
+				case 37: jaler[t].DP(s[t], j - 1);  break;
+				case 38: laer[t].DP(s[t]);  break;
+				case 39: lber[t].DP(s[t]);  break;
+				case 40: lwer[t].DP(s[t]);  break;
+				case 41: sber[t].DP(s[t]);  break;
+				case 42: swer[t].DP(s[t]);  break;
+				case 43: mover[t].DP(s[t]);  break;
+				case 44: mfhier[t].DP(s[t]);  break;
+				case 45: mfloer[t].DP(s[t]);  break;
+				case 46: syscaller[t].DP();   break;
+			}
 				if (hazard == 2)
 				{
 					i0 = i;
@@ -2347,121 +2342,130 @@ int main(int agrc,char * argv[])
 					status[(t + 4) % 5] = -1;
 					status[(t + 3) % 5] = -1;
 				}
-			}else
+			} else
 			if (k == 2)
 			{
 				if (status[t] <= 0) continue;
-				if (name[t] == 1) { adder[t].EX(); }else
-				if (name[t] == 2) { adduer[t].EX();  }else
-				if (name[t] == 3) { suber[t].EX();  }else
-				if (name[t] == 4) { subuer[t].EX();  }else
-				if (name[t] == 5) { muler[t].EX();  }else
-				if (name[t] == 6) { muluer[t].EX();  }else
-				if (name[t] == 7) { divver[t].EX();  }else
-				if (name[t] == 8) { divvuer[t].EX();  }else
-				if (name[t] == 9) { xxorer[t].EX();  }else
-				if (name[t] == 10) { xxoruer[t].EX();  }else
-				if (name[t] == 11) { neger[t].EX();  }else
-				if (name[t] == 12) { neguer[t].EX();  }else
-				if (name[t] == 13) { remer[t].EX();  }else
-				if (name[t] == 14) { remuer[t].EX();  }else
-				if (name[t] == 15) { lier[t].EX();  }else
-				if (name[t] == 16) { seqer[t].EX();  }else
-				if (name[t] == 17) { sgeer[t].EX();  }else
-				if (name[t] == 18) { sgter[t].EX();  }else
-				if (name[t] == 19) { sleer[t].EX();  }else
-				if (name[t] == 20) { slter[t].EX();  }else
-				if (name[t] == 21) { sneer[t].EX();  }else
-				if (name[t] == 22) { bber[t].EX();  }else
-				if (name[t] == 23) { beqer[t].EX();  }else
-				if (name[t] == 24) { bneer[t].EX();  }else
-				if (name[t] == 25) { bgeer[t].EX();  }else
-				if (name[t] == 26) { bleer[t].EX();  }else
-				if (name[t] == 27) { bgter[t].EX();  }else
-				if (name[t] == 28) { blter[t].EX();  }else
-				if (name[t] == 29) { beqzer[t].EX();  }else
-				if (name[t] == 30) { bnezer[t].EX();  }else
-				if (name[t] == 31) { bgezer[t].EX();  }else
-				if (name[t] == 32) { blezer[t].EX();  }else
-				if (name[t] == 33) { bgtzer[t].EX();  }else
-				if (name[t] == 34) { bltzer[t].EX();  }else
-				if (name[t] == 35) { jjer[t].EX();  }else
-				if (name[t] == 36) { jrer[t].EX();  }else
-				if (name[t] == 37) { jaler[t].EX();  }else
-				if (name[t] == 38) { laer[t].EX();  }else
-				if (name[t] == 39) { lber[t].EX();  }else
-				if (name[t] == 40) { lwer[t].EX();  }else
-				if (name[t] == 41) { sber[t].EX();  }else
-				if (name[t] == 42) { swer[t].EX();  }else
-				if (name[t] == 43) { mover[t].EX();  }else
-				if (name[t] == 44) { mfhier[t].EX();  }else
-				if (name[t] == 45) { mfloer[t].EX();  }else
-				if (name[t] == 46) { syscaller[t].EX();  }
+				switch(name[t])
+				{
+				case 1: adder[t].EX(); break;
+				case 2: adduer[t].EX();  break;
+				case 3: suber[t].EX();  break;
+				case 4: subuer[t].EX();  break;
+				case 5: muler[t].EX();  break;
+				case 6: muluer[t].EX();  break;
+				case 7: divver[t].EX();  break;
+				case 8: divvuer[t].EX();  break;
+				case 9: xxorer[t].EX();  break;
+				case 10: xxoruer[t].EX();  break;
+				case 11: neger[t].EX();  break;
+				case 12: neguer[t].EX();  break;
+				case 13: remer[t].EX();  break;
+				case 14: remuer[t].EX();  break;
+				case 15: lier[t].EX();  break;
+				case 16: seqer[t].EX();  break;
+				case 17: sgeer[t].EX();  break;
+				case 18: sgter[t].EX();  break;
+				case 19: sleer[t].EX();  break;
+				case 20: slter[t].EX();  break;
+				case 21: sneer[t].EX();  break;
+				case 22: bber[t].EX();  break;
+				case 23: beqer[t].EX();  break;
+				case 24: bneer[t].EX();  break;
+				case 25: bgeer[t].EX();  break;
+				case 26: bleer[t].EX();  break;
+				case 27: bgter[t].EX();  break;
+				case 28: blter[t].EX();  break;
+				case 29: beqzer[t].EX();  break;
+				case 30: bnezer[t].EX();  break;
+				case 31: bgezer[t].EX();  break;
+				case 32: blezer[t].EX();  break;
+				case 33: bgtzer[t].EX();  break;
+				case 34: bltzer[t].EX();  break;
+				case 35: jjer[t].EX();  break;
+				case 36: jrer[t].EX();  break;
+				case 37: jaler[t].EX();  break;
+				case 38: laer[t].EX();  break;
+				case 39: lber[t].EX();  break;
+				case 40: lwer[t].EX();  break;
+				case 41: sber[t].EX();  break;
+				case 42: swer[t].EX();  break;
+				case 43: mover[t].EX();  break;
+				case 44: mfhier[t].EX();  break;
+				case 45: mfloer[t].EX();  break;
+				case 46: syscaller[t].EX();break;
+			}
 			}else
 			if (k == 3)
 			{
 				if (status[t] <= 0) continue;
-				if (name[t] == 39) { lber[t].MA();  }else
-				if (name[t] == 40) { lwer[t].MA();  }else
-				if (name[t] == 41) { sber[t].MA();  }else
-				if (name[t] == 42) { swer[t].MA();  }else
-				if (name[t] == 46) { syscaller[t].MA();  }
-			}else
+				switch(name[t]) 
+				{
+				case 39: lber[t].MA();  break;
+				case 40: lwer[t].MA();  break;
+				case 41: sber[t].MA();  break;
+				case 42: swer[t].MA();  break;
+				case 46: syscaller[t].MA();  break;
+				} 
+		}
 			if (k == 4)
 			{
 				if (status[t] <= 0) continue;
 				int tmp = 0, mark = 0;
-				if (name[t] == 1) { adder[t].WB(); status[t] = 0;  }else
-				if (name[t] == 2) { adduer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 3) { suber[t].WB(); status[t] = 0;  }else
-				if (name[t] == 4) { subuer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 5) { muler[t].WB(); status[t] = 0;  }else
-				if (name[t] == 6) { muluer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 7) { divver[t].WB(); status[t] = 0;  }else
-				if (name[t] == 8) { divvuer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 9) { xxorer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 10) { xxoruer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 11) { neger[t].WB(); status[t] = 0;  }else
-				if (name[t] == 12) { neguer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 13) { remer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 14) { remuer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 15) { lier[t].WB(); status[t] = 0;  }else
-				if (name[t] == 16) { seqer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 17) { sgeer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 18) { sgter[t].WB(); status[t] = 0;  }else
-				if (name[t] == 19) { sleer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 20) { slter[t].WB(); status[t] = 0;  }else
-				if (name[t] == 21) { sneer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 22) { tmp = bber[t].WB(); status[t] = 0;  }else
-				if (name[t] == 23) { tmp = beqer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 24) { tmp = bneer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 25) { tmp = bgeer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 26) { tmp = bleer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 27) { tmp = bgter[t].WB(); status[t] = 0;  }else
-				if (name[t] == 28) { tmp = blter[t].WB(); status[t] = 0;  }else
-				if (name[t] == 29) { tmp = beqzer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 30) { tmp = bnezer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 31) { tmp = bgezer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 32) { tmp = blezer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 33) { tmp = bgtzer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 34) { tmp = bltzer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 35) { tmp = jjer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 36) { tmp = jrer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 37) { tmp = jaler[t].WB(); status[t] = 0;  }else
-				if (name[t] == 38) { laer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 39) { lber[t].WB(); status[t] = 0;  }else
-				if (name[t] == 40) { lwer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 41) { sber[t].WB(); status[t] = 0;  }else
-				if (name[t] == 42) { swer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 43) { mover[t].WB(); status[t] = 0;  }else
-				if (name[t] == 44) { mfhier[t].WB(); status[t] = 0;  }else
-				if (name[t] == 45) { mfloer[t].WB(); status[t] = 0;  }else
-				if (name[t] == 46) { mark = syscaller[t].WB(); status[t] = 0;  }
+				switch(name[t])
+				{
+				case 1: adder[t].WB(); status[t] = 0;  break;
+				case 2: adduer[t].WB(); status[t] = 0;  break;
+				case 3: suber[t].WB(); status[t] = 0;  break;
+				case 4: subuer[t].WB(); status[t] = 0;  break;
+				case 5: muler[t].WB(); status[t] = 0;  break;
+				case 6: muluer[t].WB(); status[t] = 0;  break;
+				case 7: divver[t].WB(); status[t] = 0;  break;
+				case 8: divvuer[t].WB(); status[t] = 0;  break;
+				case 9: xxorer[t].WB(); status[t] = 0;  break;
+				case 10: xxoruer[t].WB(); status[t] = 0;  break;
+				case 11: neger[t].WB(); status[t] = 0;  break;
+				case 12: neguer[t].WB(); status[t] = 0;  break;
+				case 13: remer[t].WB(); status[t] = 0;  break;
+				case 14: remuer[t].WB(); status[t] = 0;  break;
+				case 15: lier[t].WB(); status[t] = 0;  break;
+				case 16: seqer[t].WB(); status[t] = 0;  break;
+				case 17: sgeer[t].WB(); status[t] = 0;  break;
+				case 18: sgter[t].WB(); status[t] = 0;  break;
+				case 19: sleer[t].WB(); status[t] = 0;  break;
+				case 20: slter[t].WB(); status[t] = 0;  break;
+				case 21: sneer[t].WB(); status[t] = 0;  break;
+				case 22: tmp = bber[t].WB(); status[t] = 0;  break;
+				case 23: tmp = beqer[t].WB(); status[t] = 0;  break;
+				case 24: tmp = bneer[t].WB(); status[t] = 0;  break;
+				case 25: tmp = bgeer[t].WB(); status[t] = 0;  break;
+				case 26: tmp = bleer[t].WB(); status[t] = 0;  break;
+				case 27: tmp = bgter[t].WB(); status[t] = 0;  break;
+				case 28: tmp = blter[t].WB(); status[t] = 0;  break;
+				case 29: tmp = beqzer[t].WB(); status[t] = 0;  break;
+				case 30: tmp = bnezer[t].WB(); status[t] = 0;  break;
+				case 31: tmp = bgezer[t].WB(); status[t] = 0;  break;
+				case 32: tmp = blezer[t].WB(); status[t] = 0;  break;
+				case 33: tmp = bgtzer[t].WB(); status[t] = 0;  break;
+				case 34: tmp = bltzer[t].WB(); status[t] = 0;  break;
+				case 35: tmp = jjer[t].WB(); status[t] = 0;  break;
+				case 36: tmp = jrer[t].WB(); status[t] = 0;  break;
+				case 37: tmp = jaler[t].WB(); status[t] = 0;  break;
+				case 38: laer[t].WB(); status[t] = 0;  break;
+				case 39: lber[t].WB(); status[t] = 0;  break;
+				case 40: lwer[t].WB(); status[t] = 0;  break;
+				case 41: sber[t].WB(); status[t] = 0;  break;
+				case 42: swer[t].WB(); status[t] = 0;  break;
+				case 43: mover[t].WB(); status[t] = 0;  break;
+				case 44: mfhier[t].WB(); status[t] = 0;  break;
+				case 45: mfloer[t].WB(); status[t] = 0;  break;
+				case 46: mark = syscaller[t].WB(); status[t] = 0;  break;
+			}
 				if (tmp != 0)
 				{
 					laststone = 1; j = tmp;
 				}
-				if (name[t] == 46 && mark != -1) return mark;
+			    if (name[t] ==  46 && mark != -1) return mark;
 			}
 		}
 	}
