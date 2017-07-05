@@ -5,6 +5,8 @@
 #include<map>
 #include<cstdlib>
 #include<fstream>
+#include<ctime>
+#include<cstdlib>
 const int N = 10000000;
 using namespace std;
 vector<string> str;
@@ -29,7 +31,7 @@ void inc(int &x)
 }
 void dec(int &x)
 {
-	-x;
+	--x;
 	if (x < 0) x = 0;
 }
 struct data_type
@@ -2059,12 +2061,13 @@ string get_name(string s)
 	return ss;
 }
 ofstream fout("array_test1-mahaojun.out");
-int main()
+int main(int agrc,char* agrv[])
 {
+	srand(time(0));
 	r[29] = N;
 	ready();
 	for (int ii = 0; ii < 120; ++ii) BP[ii] = 0;
-	FILE *stdin1 = fopen("basicopt1-5100309127-hetianxing.s", "r");
+	FILE *stdin1 = fopen(agrv[1], "r");
 	//	FILE *stdin2 = fopen("array_test1-mahaojun.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
@@ -2581,7 +2584,7 @@ int main()
 
 				if (name[t] == 46 && mark != -1)
 				{
-					cout << cnum << ' ' << snum << endl;
+				//	cout << cnum << ' ' << snum << ' '<<(double(cnum) / snum) * 100<<"%"<< endl;
 					return mark;
 				}
 			}
