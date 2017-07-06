@@ -21,18 +21,38 @@ int i = -1, j, k = 0;
 int r[32] = { 0 };
 int f[34] = { 0 };
 int BP[120] = { 0 };
+int tbp[120][16] = { 0 };
+vector<bool> all[120];
 int cnum = 0, snum = 0;
 int lo = 0, hi = 0;
 string jump;
-void inc(int &x)
+void inc(int x)
 {
-	++x;
-	if (x > 3) x = 3;
+	if (all[x].size() <= 4) return;
+	else
+	{
+		int z = all[x].size();
+		int y = (all[x][z - 5] * 8 + all[x][z - 4] * 4 + all[x][z - 3] * 2 + all[x][z - 2]);
+		if (all[x][z - 1] == 1)
+		{
+			++tbp[x][y];
+			if (tbp[x][y] > 4) tbp[x][y] = 4;
+		}
+	}
 }
-void dec(int &x)
+void dec(int x)
 {
-	--x;
-	if (x < 0) x = 0;
+	if (all[x].size() <= 4) return;
+	else
+	{
+		int z = all[x].size();
+		int y = (all[x][z - 5] * 8 + all[x][z - 4] * 4 + all[x][z - 3] * 2 + all[x][z - 2]);
+		if (all[x][z - 1] == 0)
+		{
+			--tbp[x][y];
+			if (tbp[x][y] < 0) tbp[x][y] = 0;
+		}
+	}
 }
 struct data_type
 {
@@ -2011,10 +2031,10 @@ public:
 
 		if (r[2] == 5 || r[2] == 9) f[2] = h;
 		//cout << r[2] << ' ' << r[4] << endl;
-		if (r[2] == 1) cout << r[4]; else
+		if (r[2] == 1) printf("%d",r[4]); else
 			if (r[2] == 4) {
 				int j = r[4];
-				while (datar[j].chr != '\0') { cout << datar[j].chr; ++j; }
+				while (datar[j].chr != '\0') {printf("%c", datar[j].chr); ++j; }
 			}
 			else
 				if (r[2] == 5) {
@@ -2054,20 +2074,27 @@ public:
 		return -1;
 	}
 };
-string get_name(string s)
-{
-	string ss;
-	for (int k = 0; k < s.size() && s[k] != ' '; ++k) ss += s[k];
-	return ss;
-}
 ofstream fout("array_test1-mahaojun.out");
-int main(int agrc,char* agrv[])
+bool try_tbp(int x)
+{
+	if (all[x].size() <= 3) return false;
+	else
+	{
+		int z = all[x].size();
+		int y = (all[x][z - 4] * 8 + all[x][z - 3] * 4 + all[x][z - 2] * 2 + all[x][z - 1]);
+		if (tbp[x][y] >= 3 || (tbp[x][y] == 2 && (rand() % 2 == 0))) return true;
+		else return false;
+	}
+}
+int main()
 {
 	srand(time(0));
 	r[29] = N;
 	ready();
-	for (int ii = 0; ii < 120; ++ii) BP[ii] = 0;
-	FILE *stdin1 = fopen(agrv[1], "r");
+	for (int ii = 0; ii < 120; ++ii) 
+	for (int jj = 0;jj < 16;++jj)
+	tbp[ii][jj] = 2;
+	FILE *stdin1 = fopen("heapsort-5100379110-daibo.s", "r");
 	//	FILE *stdin2 = fopen("array_test1-mahaojun.in", "r");
 	char chr[100];
 	while (fscanf(stdin1, "%[^\n]", &chr) != EOF)
@@ -2332,12 +2359,14 @@ int main(int agrc,char* agrv[])
 				while (label[str[j]] != 0)
 					++j;
 				s[t] = str[j];
-				name[t] = to_int[get_name(s[t])];
+				string ss = "";
+				for (int k = 0; k < s[t].size() && s[t][k] != ' '; ++k) ss += s[t][k];
+				name[t] = to_int[ss];
 				status[t] = 1;
 				//cout << j << '\t' << str[j] << ' '<<r[8]<<' '<<r[9]<<' '<<r[10]<<' '<<r[11]<<' '<<r[12]<<endl;
 				//for (int k = 0; k < 32; ++k) fout << k << '\t'; fout << endl;
 				//for (int k = 0; k < 32; ++k) fout << r[k] << '\t'; fout << endl;
-				//	cout << status[0] << ' ' << status[1] << ' ' << status[2] << ' ' << status[3] << ' ' << status[4] << endl;
+				//	cout << status[0] << ' ' << status[1] << ' ' << status[2] << ' 'syscall << status[3] << ' ' << status[4] << endl;
 			}
 			else
 				if (k == 1)
@@ -2417,7 +2446,7 @@ int main(int agrc,char* agrv[])
 							{
 								++snum;
 								jum[t] = jump;
-								if (BP[name[t]] >= 2)
+								if (try_tbp(name[t]))
 								{
 									ma[t] = 1;
 									j0[t] = j;
@@ -2486,25 +2515,26 @@ int main(int agrc,char* agrv[])
 						}
 						if (ha[t] == 3)
 						{
+							all[name[t]].push_back(tmp);
 							if (ma[t] == 1)
 							{
-								if (tmp == true) { ++cnum; inc(BP[name[t]]);}
+								if (tmp == true) { ++cnum; inc(name[t]); }
 								else
 								{
 									mar = 1;
 									j = j0[t] - 1;
-									dec(BP[name[t]]);
+									dec(name[t]);
 									break;
 								}
 							}
 							else
 							{
-								if (tmp == false) { ++cnum; dec(BP[name[t]]);}
+								if (tmp == false) { ++cnum; dec(name[t]); }
 								else
 								{
 									mar = 1;
 									j = label[jum[t]];
-									inc(BP[name[t]]);
+									inc(name[t]);
 									break;
 								}
 							}
@@ -2577,14 +2607,19 @@ int main(int agrc,char* agrv[])
 				case 46: mark = syscaller[t].WB(); status[t] = 0;  break;
 				}
 				if (ha[t] == 3) ha[t] = 0; else
-				if (tmp != 0)
-				{
-					laststone = 1; j = tmp;
-				}
+					if (tmp != 0)
+					{
+						laststone = 1; j = tmp;
+					}
 
 				if (name[t] == 46 && mark != -1)
 				{
-				//	cout << cnum << ' ' << snum << ' '<<(double(cnum) / snum) * 100<<"%"<< endl;
+					cout << cnum << ' ' << snum << ' ' << (double(cnum) / snum) * 100 << "%" << endl;
+					//	for (int ii = 22; ii <= 37;++ii)
+					//	{
+					//		for (int jj = 0;jj <= 3;++jj) cout<<tbp[ii][jj]<<' ';
+					//		cout<<endl;
+					//	}
 					return mark;
 				}
 			}
